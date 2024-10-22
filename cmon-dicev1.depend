@@ -1,0 +1,98 @@
+# depslib dependency file v1.0
+1728126063 source:c:\users\pc\desktop\cmon-dicev1\funciones.c
+	"funciones.h"
+
+1728125577 c:\users\pc\desktop\cmon-dicev1\funciones.h
+	<stdio.h>
+	<stdlib.h>
+	<curl/curl.h>
+	"./Biblioteca/include/listaSimple/listaSimple.h"
+	"./Biblioteca/include/menu/menu.h"
+	"./Biblioteca/include/generico.h"
+
+1728125649 source:c:\users\pc\desktop\cmon-dicev1\main.c
+	"funciones.h"
+
+1727841381 c:\users\pc\desktop\cmon-dicev1\biblioteca\include\listasimple\listasimple.h
+	<stdlib.h>
+	<stdio.h>
+	<string.h>
+	<time.h>
+
+1727946518 c:\users\pc\desktop\cmon-dicev1\biblioteca\include\menu\menu.h
+	<stdio.h>
+	<stdlib.h>
+	<string.h>
+	"arbol.h"
+
+1727584423 c:\users\pc\desktop\cmon-dicev1\biblioteca\include\menu\arbol.h
+	<stdlib.h>
+	<string.h>
+	<stdio.h>
+
+1725963750 c:\users\pc\desktop\cmon-dicev1\biblioteca\include\generico.h
+	<stdio.h>
+	<stdlib.h>
+	<string.h>
+
+1728029229 source:c:\users\pc\desktop\cmon-dicev1\biblioteca\src\generico.c
+	"../include/generico.h"
+
+1728009023 source:c:\users\pc\desktop\cmon-dicev1\biblioteca\src\listasimple\listasimple.c
+	"../../include/listaSimple/listaSimple.h"
+
+1727589018 source:c:\users\pc\desktop\cmon-dicev1\biblioteca\src\menu\arbol.c
+	"../../include/menu/arbol.h"
+
+1727846557 source:c:\users\pc\desktop\cmon-dicev1\biblioteca\src\menu\menu.c
+	"../../include/menu/menu.h"
+
+1728029229 source:c:\dev\ayed\tp\cmon-dicev1\biblioteca\src\generico.c
+	"../include/generico.h"
+
+1725963750 c:\dev\ayed\tp\cmon-dicev1\biblioteca\include\generico.h
+	<stdio.h>
+	<stdlib.h>
+	<string.h>
+
+1728009023 source:c:\dev\ayed\tp\cmon-dicev1\biblioteca\src\listasimple\listasimple.c
+	"../../include/listaSimple/listaSimple.h"
+
+1727841381 c:\dev\ayed\tp\cmon-dicev1\biblioteca\include\listasimple\listasimple.h
+	<stdlib.h>
+	<stdio.h>
+	<string.h>
+	<time.h>
+
+1727589018 source:c:\dev\ayed\tp\cmon-dicev1\biblioteca\src\menu\arbol.c
+	"../../include/menu/arbol.h"
+
+1727584423 c:\dev\ayed\tp\cmon-dicev1\biblioteca\include\menu\arbol.h
+	<stdlib.h>
+	<string.h>
+	<stdio.h>
+
+1729622718 source:c:\dev\ayed\tp\cmon-dicev1\biblioteca\src\menu\menu.c
+	"../../include/menu/menu.h"
+
+1727946518 c:\dev\ayed\tp\cmon-dicev1\biblioteca\include\menu\menu.h
+	<stdio.h>
+	<stdlib.h>
+	<string.h>
+	"arbol.h"
+
+1729628903 source:c:\dev\ayed\tp\cmon-dicev1\funciones.c
+	"funciones.h"
+
+1729628841 c:\dev\ayed\tp\cmon-dicev1\funciones.h
+	<stdio.h>
+	<stdlib.h>
+	<ctype.h>
+	<curl/curl.h>
+	"./Biblioteca/include/listaSimple/listaSimple.h"
+	"./Biblioteca/include/menu/menu.h"
+	"./Biblioteca/include/generico.h"
+
+1729628871 source:c:\dev\ayed\tp\cmon-dicev1\main.c
+	"funciones.h"
+
