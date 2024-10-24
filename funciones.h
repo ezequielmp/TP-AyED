@@ -22,6 +22,7 @@
 #define ERR_FORMATO_ARCH_DUPLICADO 0
 #define DUPLICADO 0
 #define NO_DUPLICADO 1
+#define SALIR 0
 
 #define NOMBRE_ARCH_CONFIG 1
 
@@ -57,8 +58,8 @@ void configurarCURL(CURL* curl, void* dato);
 int ejecutarSolicitud(CURL* curl);
 
 void mostrarJugador(const void* dato);
-void juego(void* recursos);
-void switchTextoMenu(int opcion, void* recursosMenu);
+void juego(void* recursos, tConfig* config);
+//void switchTextoMenu(int opcion, void* recursosMenu);
 
 void crearLoteDePrueba (const char* nombreArch);
 
@@ -66,6 +67,14 @@ int leerArchivoConfig (const char* nombreArch, tConfig* vecConfig);
 void trozarArchivoVariable (char* s, tConfig* d);
 int insertarAlFinalVector (void* v, const void* d, int ce, size_t tam);
 int buscarPorClaveVector (void* v, const void* d, int ce, size_t tam, int (*cmp)(const void* x, const void* y));
+int cmpDificultad(const void* a, const void* b);
 int cmpConfigNivel (const void* a, const void* b);
+
+/** Funciones nuevas, reemplazando por un nuevo menu **/
+void* buscarDificultad(void* v, const void* dato, size_t tam, int(*cmp)(const void* x, const void* y));
+void detallesJuego(tConfig* config);
+void cargarOpcion(char* op);
+void switchMenu(char opcion, void* recursos, tConfig* config);
+void menuNuevo(char textoMenu[][MAX_TAM_TEXTO], unsigned cantidadDeRegistros, void* recursosMenu, tConfig* config);
 
 #endif // FUNCIONES_H_INCLUDED
