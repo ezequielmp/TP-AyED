@@ -1,4 +1,8 @@
 #include "funciones.h"
+#include "menu.h"
+#include "vector.h"
+#define ES_LETRA(X) (((X) >= 'a' && (X) <= 'z') || ((X) >= 'A' && (X) <= 'Z'))
+#define A_MAYUS(X) (((X) >= 'a' && (X) <= 'z') ? ((X) - ('a' - 'A')) : (X))
 
 /** Funciones CURL **/
 
@@ -8,8 +12,7 @@ size_t WriteCallback(char* contents, size_t tamanyo, size_t nmemb, void *userp)
 
     memcpy(((tUserDataWriteCallback*)userp)->buffer, contents, totalSize);
 
-    ((tUserDataWriteCallback*)userp)->buffer += totalSize;
-    ((tUserDataWriteCallback*)userp)->cantBytesCargados += totalSize;
+    ((tUserDataWriteCallback*)userp)->cantBytesCargados = totalSize;
 
     return totalSize;
 }
@@ -78,8 +81,8 @@ int ingresoDeNombresAListaSimple(t_lista* listaDeJugadores, unsigned* cantidadDe
         }
         else
         {
-            (jugador.id)++;
-            (*cantidadDeJugadores) = jugador.id;
+            jugador.id++;
+            *cantidadDeJugadores = jugador.id;
             insertarAlFinalEnListaSimple(listaDeJugadores, &jugador, sizeof(tJugador));
         }
         system("cls");
@@ -94,51 +97,223 @@ int ingresoDeNombresAListaSimple(t_lista* listaDeJugadores, unsigned* cantidadDe
     return OK;
 }
 
-void detallesJuego(tConfig* config)
+void transformarCad(char *cad, char *vec, unsigned cantElem, unsigned cantVec)
 {
-    char op;
-    tConfig* elemento;
-
-    printf("Niveles de dificultad.\n F - Facil\n M - Medio\n D - Dificil\n");
-
-    do
-    {
-        printf("\nIngrese el nivel de dificultad: ");
-        scanf("%c", &op);
-        getchar();
-
-        if (op != 'F' && op != 'M' && op != 'D') {
-            printf("\nOpcion incorrecta\n");
-        }
-    }while(op != 'F' && op != 'M' && op != 'D');
-
-    elemento = (tConfig*)(buscarDificultad(config, &op, sizeof(tConfig), cmpDificultad));
-
-    printf("\n-------------------------------------------\n");
-    printf("Configuracion de la partida: \n");
-    printf("Nivel: %c\n", elemento->nivel);
-    printf("Tiempo que se muestra la secuencia: %i\n", elemento->tiempoSecuenciaEnPantalla);
-    printf("Tiempo para contestar: %u\n", elemento->tiempoContestar);
-    printf("Cantidad de vidas: %u\n", elemento->cantVidas);
-    printf("-------------------------------------------\n");
-    system("pause");
-    system("cls");
+    int i;
+    for(i = 0; i < cantElem; i++)
+        *(cad + i) = *(vec + (*(cad + i) - '0') % cantVec);
 }
 
 void juego(void* recursos, tConfig* config)
 {
-    if(!ingresoDeNombresAListaSimple(&(((tRecursosMenu*)recursos)->listaDeJugadores), &(((tRecursosMenu*)recursos)->cantidadDeJugadores)))
+    tConfig *dificultad;
+    char colores[4] = {'R', 'N', 'A', 'V'};
+    if(!ingresoDeNombresAListaSimple(&((tRecursosMenu*)recursos)->listaDeJugadores, &(((tRecursosMenu*)recursos)->cantidadDeJugadores)))
     {
         printf("No ingresaste jugadores.\n");
     }
     else
     {
-        detallesJuego(config);
+        dificultad = detallesJuego(config);
         mezclarListaSimpleAleatoriamente(&(((tRecursosMenu*)recursos)->listaDeJugadores), ((tRecursosMenu*)recursos)->cantidadDeJugadores);
         printf("\nLista de jugadores:\n");
         mostrarListaSimpleEnOrden(&(((tRecursosMenu*)recursos)->listaDeJugadores), mostrarJugador);
         system("pause");
         system("cls");
+        if(pedirNumeros(URL, ((tRecursosMenu*)recursos)->secuencia, 100) == ERROR_CURL)
+        {
+            fprintf(stderr, "Error al pedir informacion a la API\n");
+            exit(1);
+        }
+
+        transformarCad(((tRecursosMenu*)recursos)->secuencia, colores, sizeof(((tRecursosMenu*)recursos)->secuencia), sizeof(colores));
+        rondas(recursos, dificultad);
+    }
+}
+
+void mostrarSecuencia(char *secuencia, unsigned cant, unsigned milisegundos)
+{
+    int i;
+
+    printf("Secuencia: ");
+    for(i = 0; i < cant; i++)
+    {
+        printf("%c\t", *secuencia);
+        secuencia++;
+        Sleep(milisegundos / cant);
+    }
+}
+
+int ingresarSecuencia(t_lista *ingresos, unsigned cantIngresos, unsigned tiempo, char *secuencia, unsigned *cantidadIngresos)
+{
+    clock_t tiempoIni = clock();
+    int incorrecto, tiempoPasado = 0;
+    char respuesta;
+    int correctas = *cantidadIngresos;
+    printf("Ingrese la secuencia mostrada por pantalla letra por letra, una a la vez:\n");
+
+    do
+    {
+        do
+        {
+            fflush(stdin);
+            scanf("%c", &respuesta);
+            incorrecto = respuesta != 'R' && respuesta != 'N' && respuesta != 'A' && respuesta != 'V' && respuesta != 'Z';
+            if(incorrecto)
+                printf("Caracter invalido, ingrese nuevamente.\n");
+        }
+        while(incorrecto && clock() - tiempoIni <= tiempo * 1000);
+        if(!incorrecto && clock() - tiempoIni <= tiempo * 1000)
+        {
+            if(respuesta == 'Z')
+                return VIDAS;
+            if(*(secuencia + *cantidadIngresos) == toupper(respuesta))
+            {
+                correctas++;
+            }
+            (*cantidadIngresos)++;
+
+            insertarPrimeroEnListaSimple(ingresos, &respuesta, sizeof(char));
+        }
+
+        tiempoPasado = clock() - tiempoIni <= tiempo * 1000;
+    }
+    while(tiempoPasado && *cantidadIngresos < cantIngresos);
+
+    if(!tiempoPasado)
+        return !*cantidadIngresos ? VIDAS : PERDER;
+    if(*cantidadIngresos < cantIngresos)
+        return PERDER;
+
+    system("cls");
+    return (correctas == cantIngresos ? TODO_OK : VIDAS);
+}
+
+unsigned ingresarVidas(unsigned cantUsable, unsigned vidasDisp)
+{
+    int vidasIngresadas;
+
+    printf("Tiene la oportunidad de usar vidas para retroceder 1 jugada por vida. Tiene %u vidas disponibles ¿Cuantas vidas quiere usar?\n", vidasDisp);
+
+    do
+    {
+        scanf("%d", &vidasIngresadas);
+    }
+    while(vidasIngresadas > vidasDisp || vidasIngresadas > cantUsable || vidasIngresadas <= 0);
+
+    return vidasIngresadas;
+}
+
+/*int usarVidas(unsigned vidas, unsigned cantIngresos, unsigned ronda, char* secuencia)
+{
+    int i, vidasUsadas;
+    while(result != TODO_OK && result != PERDER)
+    {
+        if(!vidas)
+        {
+            return PERDER;
+        }
+        else
+        {
+            vidasUsadas = ingresarVidas(cantIngresos + 1, vidas);
+
+            for(i = 0; i < vidasUsadas; i++)
+                sacarPrimeroEnListaSimple()
+            }
+    }
+}*/
+
+void rondas(void *recursos, tConfig *dificultad)
+{
+    int turno = 1, ronda = 1, result;
+    char *secuencia = ((tRecursosMenu*)recursos)->secuencia;
+    t_lista lista;
+    unsigned cantIngresos;
+    unsigned vidas = dificultad->cantVidas, vidasUsadas = 0;
+
+    crearListaSimple(&lista);
+    while(turno <= ((tRecursosMenu*)recursos)->cantidadDeJugadores)
+    {
+        system("cls");
+        cantIngresos = 0;
+        vaciarListaSimple(&lista);
+        printf("Turno %d | ronda %d:\n", turno, ronda);
+        mostrarSecuencia(secuencia, ronda, (dificultad->tiempoSecuenciaEnPantalla + ronda) * 1000);
+        system("cls");
+        result = ingresarSecuencia(&lista, ronda, dificultad->tiempoContestar, secuencia, &cantIngresos);
+
+        if(result == VIDAS)
+        {
+            if(!vidas)
+                result = PERDER;
+
+            while(result == VIDAS && !vidasUsadas && vidas)
+            {
+                vidasUsadas = ingresarVidas(cantIngresos + 1, vidas);
+
+                while(vidasUsadas && sacarPrimeroEnListaSimple(&lista, NULL, 0))
+                {
+                    vidasUsadas--;
+                    vidas--;
+                    cantIngresos--;
+                }
+
+                if(!vidasUsadas)
+                    result = ingresarSecuencia(&lista, ronda, dificultad->tiempoContestar, secuencia, &cantIngresos);
+            }
+            if(vidasUsadas)
+            {
+                vidasUsadas = 0;
+                vidas--;
+            }
+        }
+
+        if(result == PERDER)
+        {
+            printf("No tiene mas vidas, usted ha perdido\n");
+            system("pause");
+            system("cls");
+
+            secuencia += ronda; ///VER QUE NO NOS QUEDEMOS SIN NUMEROS
+            turno++;
+            ronda = 1;
+            vidas = dificultad->cantVidas;
+        }
+        else
+        {
+            if(result == TODO_OK)
+            {
+                ronda++;
+            }
+        }
+    }
+
+    //mostrarListaSimpleEnOrden(&lista, mostrarCaracter);
+}
+
+void eliminarCaracter(char *cad, char caracter, unsigned longitud)
+{
+    char *escrit = cad;
+    int borrar = 0;
+
+    while(longitud--)
+    {
+        if(*cad == caracter)
+        {
+            borrar = 1;
+        }
+        else
+        {
+            if(borrar)
+            {
+                *escrit = *cad;
+                escrit++;
+            }
+        }
+
+        cad++;
+        if(!borrar)
+            escrit++;
     }
 }
 
@@ -175,19 +350,6 @@ int cmpConfigNivel (const void* a, const void* b)
     return ((tConfig*)a)->nivel - ((tConfig*)b)->nivel;
 }
 
-int cmpDificultad(const void* a, const void* b)
-{
-    return ((tConfig*)a)->nivel - *((char*)b);
-}
-
-int insertarAlFinalVector (void* v, const void* d, int ce, size_t tam)
-{
-    void* ult = v + ce * tam;
-
-    memcpy(ult, d, tam);
-    return TODO_OK;
-}
-
 int leerArchivoConfig (const char* nombreArch, tConfig* vecConfig)
 {
     FILE* fp;
@@ -205,9 +367,9 @@ int leerArchivoConfig (const char* nombreArch, tConfig* vecConfig)
     {
         trozarArchivoVariable(linea, &config);
         if(config.cantVidas < 0 || config.cantVidas > 5
-           || config.tiempoContestar < 1 || config.tiempoContestar > 20
-           || config.tiempoSecuenciaEnPantalla < 1 || config.tiempoSecuenciaEnPantalla > 20
-           || (toupper(config.nivel) != 'F' && toupper(config.nivel) != 'M' && toupper(config.nivel) != 'D'))
+                || config.tiempoContestar < 1 || config.tiempoContestar > 20
+                || config.tiempoSecuenciaEnPantalla < 1 || config.tiempoSecuenciaEnPantalla > 20
+                || (toupper(config.nivel) != 'F' && toupper(config.nivel) != 'M' && toupper(config.nivel) != 'D'))
         {
             fclose(fp);
             return ERR_FORMATO_ARCH;
@@ -224,37 +386,6 @@ int leerArchivoConfig (const char* nombreArch, tConfig* vecConfig)
 
     fclose(fp);
     return TODO_OK;
-}
-
-void* buscarDificultad(void* v, const void* dato, size_t tam, int(*cmp)(const void* a, const void* b))
-{
-    int i;
-    void* elemento = v;
-
-    for(i=0; i<TAM_VECTOR_CONFIG; i++)
-    {
-        if(cmp(elemento, dato) == 0)
-            return elemento;
-        elemento+=tam;
-    }
-}
-
-
-int buscarPorClaveVector (void* v, const void* d, int ce, size_t tam, int (*cmp)(const void* x, const void* y))
-{
-    void* i = v;
-    void* ult = v + (ce - 1) * tam;
-
-    if(ce == 0)
-        return NO_DUPLICADO;
-
-    while(i <= ult && cmp(d, i) != 0)
-        i += tam;
-
-    if(i <= ult && cmp(d, i) == 0)
-        return DUPLICADO;
-
-    return NO_DUPLICADO;
 }
 
 void trozarArchivoVariable (char* s, tConfig* d)
@@ -281,48 +412,43 @@ void trozarArchivoVariable (char* s, tConfig* d)
     sscanf(s, "%c", &d->nivel);
 }
 
-void cargarOpcion(char* op)
+int pedirNumeros(const char *url, char *buffer, unsigned cant)
 {
-    do
+    CURL* curl;
+    tUserDataWriteCallback dato;
+
+    dato.buffer = malloc(cant * 2);
+    dato.cantBytesCargados = 0;
+    if(NULL == dato.buffer)
     {
-        printf("\nIngrese una opcion: ");
-        scanf("%c", op);
-        getchar();
-
-        if (*op != 'A' && *op != 'B') {
-            printf("\nOpcion incorrecta\n");
-        }
-    }while(*op != 'A' && *op != 'B');
-}
-
-
-void switchMenu(char opcion, void* recursos, tConfig* config)
-{
-    switch(opcion)
-    {
-    case 'A':
-        juego(recursos, config);
-        break;
-    case 'B':
-        system("cls");
-        printf("Saliendo...\n");
-        exit(1);
-    }
-}
-
-void menuNuevo(char textoMenu[][MAX_TAM_TEXTO], unsigned cantidadDeRegistros, void* recursosMenu, tConfig* config)
-{
-    int i;
-    char op;
-
-    for(i=0; i<cantidadDeRegistros; i++)
-    {
-        printf("%s\n", *textoMenu);
-        textoMenu++;
+        fprintf(stderr,"No pude reservar memoria.");
+        return ERROR_CURL;
     }
 
-    cargarOpcion(&op);
+    if(!iniciarCURL(&curl))//RESERVO RECURSOS PARA REALIZAR CONFIGURACIONES DE REQUEST
+    {
+        free(dato.buffer);
+        return ERROR_CURL;
+    }
 
-    switchMenu(op, recursosMenu, config);
+    //CONFIGURACION DE LOS RECURSOS RESERVADOS PARA HACER LA REQUEST
+    configurarCURL(curl, &dato.buffer);
 
+    //SE HACE LA REQUEST Y SE REALIZA MANEJO DE ERRORES POR SI FALLA
+    if(!ejecutarSolicitud(curl))
+    {
+        curl_easy_cleanup(curl);    //LIBERO RECURSOS RESERVADOS
+        free(dato.buffer);
+        return ERROR_CURL;
+    }
+
+    eliminarCaracter(dato.buffer, '\n', dato.cantBytesCargados);
+    memcpy(buffer, dato.buffer, cant);
+    free(dato.buffer);
+    return dato.cantBytesCargados / 2;
+}
+
+void mostrarCaracter(const void* dato)
+{
+    printf("%c", *(char*)dato);
 }
