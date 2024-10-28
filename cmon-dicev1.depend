@@ -96,3 +96,132 @@
 1729628871 source:c:\dev\ayed\tp\cmon-dicev1\main.c
 	"funciones.h"
 
+1729789140 source:c:\users\ezequiel\documents\algoritmos y estructuras de datos\tp-ayed\biblioteca\src\generico.c
+	"../include/generico.h"
+
+1729789140 c:\users\ezequiel\documents\algoritmos y estructuras de datos\tp-ayed\biblioteca\include\generico.h
+	<stdio.h>
+	<stdlib.h>
+	<string.h>
+
+1729894114 source:c:\users\ezequiel\documents\algoritmos y estructuras de datos\tp-ayed\biblioteca\src\listasimple\listasimple.c
+	"../../include/listaSimple/listaSimple.h"
+
+1729894292 c:\users\ezequiel\documents\algoritmos y estructuras de datos\tp-ayed\biblioteca\include\listasimple\listasimple.h
+	<stdlib.h>
+	<stdio.h>
+	<string.h>
+	<time.h>
+
+1729789140 source:c:\users\ezequiel\documents\algoritmos y estructuras de datos\tp-ayed\biblioteca\src\menu\arbol.c
+	"../../include/menu/arbol.h"
+
+1729789140 c:\users\ezequiel\documents\algoritmos y estructuras de datos\tp-ayed\biblioteca\include\menu\arbol.h
+	<stdlib.h>
+	<string.h>
+	<stdio.h>
+
+1729789140 source:c:\users\ezequiel\documents\algoritmos y estructuras de datos\tp-ayed\biblioteca\src\menu\menu.c
+	"../../include/menu/menu.h"
+
+1729789140 c:\users\ezequiel\documents\algoritmos y estructuras de datos\tp-ayed\biblioteca\include\menu\menu.h
+	<stdio.h>
+	<stdlib.h>
+	<string.h>
+	"arbol.h"
+
+1729797565 source:c:\users\ezequiel\documents\algoritmos y estructuras de datos\tp-ayed\menu.c
+	"menu.h"
+	"funciones.h"
+
+1729797556 c:\users\ezequiel\documents\algoritmos y estructuras de datos\tp-ayed\menu.h
+	<stdlib.h>
+	"config.h"
+	"./Biblioteca/include/listaSimple/listaSimple.h"
+
+1729790409 c:\users\ezequiel\documents\algoritmos y estructuras de datos\tp-ayed\config.h
+
+1729893436 c:\users\ezequiel\documents\algoritmos y estructuras de datos\tp-ayed\funciones.h
+	<stdio.h>
+	<stdlib.h>
+	<ctype.h>
+	<curl/curl.h>
+	"./Biblioteca/include/generico.h"
+	"config.h"
+	<string.h>
+	<windows.h>
+	<time.h>
+	"./Biblioteca/include/listaSimple/listaSimple.h"
+
+1729791105 source:c:\users\ezequiel\documents\algoritmos y estructuras de datos\tp-ayed\vector.c
+	"vector.h"
+
+1729791010 c:\users\ezequiel\documents\algoritmos y estructuras de datos\tp-ayed\vector.h
+	<stdlib.h>
+	<string.h>
+
+1729897928 source:c:\users\ezequiel\documents\algoritmos y estructuras de datos\tp-ayed\funciones.c
+	"funciones.h"
+	"menu.h"
+	"vector.h"
+
+1729828529 source:c:\users\ezequiel\documents\algoritmos y estructuras de datos\tp-ayed\main.c
+	"funciones.h"
+	"menu.h"
+
+1729899961 source:c:\dev\ayed\tp\tp-ayed-ezequiel\biblioteca\src\generico.c
+	"../include/generico.h"
+
+1729899961 c:\dev\ayed\tp\tp-ayed-ezequiel\biblioteca\include\generico.h
+	<stdio.h>
+	<stdlib.h>
+	<string.h>
+
+1730103356 source:c:\dev\ayed\tp\tp-ayed-ezequiel\biblioteca\src\listasimple\listasimple.c
+	"../../include/listaSimple/listaSimple.h"
+
+1729899961 c:\dev\ayed\tp\tp-ayed-ezequiel\biblioteca\include\listasimple\listasimple.h
+	<stdlib.h>
+	<stdio.h>
+	<string.h>
+	<time.h>
+
+1730103885 source:c:\dev\ayed\tp\tp-ayed-ezequiel\funciones.c
+	"funciones.h"
+	"menu.h"
+	"vector.h"
+
+1730101937 c:\dev\ayed\tp\tp-ayed-ezequiel\funciones.h
+	<stdio.h>
+	<stdlib.h>
+	<ctype.h>
+	<curl/curl.h>
+	"./Biblioteca/include/generico.h"
+	"config.h"
+	<string.h>
+	<windows.h>
+	<time.h>
+	"./Biblioteca/include/listaSimple/listaSimple.h"
+
+1729899961 c:\dev\ayed\tp\tp-ayed-ezequiel\config.h
+
+1729899961 c:\dev\ayed\tp\tp-ayed-ezequiel\menu.h
+	<stdlib.h>
+	"config.h"
+	"./Biblioteca/include/listaSimple/listaSimple.h"
+
+1729899961 c:\dev\ayed\tp\tp-ayed-ezequiel\vector.h
+	<stdlib.h>
+	<string.h>
+
+1730039912 source:c:\dev\ayed\tp\tp-ayed-ezequiel\main.c
+	"funciones.h"
+	"menu.h"
+
+1730010079 source:c:\dev\ayed\tp\tp-ayed-ezequiel\menu.c
+	"menu.h"
+	"funciones.h"
+
+1729899961 source:c:\dev\ayed\tp\tp-ayed-ezequiel\vector.c
+	"vector.h"
+
