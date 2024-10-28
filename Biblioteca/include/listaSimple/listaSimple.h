@@ -29,7 +29,7 @@ void vaciarListaSimple(t_lista *pl);
 int listaSimpleVacia(const t_lista* pl);
 //int insertarOrdenadoSinDuplicados(t_lista* pl, const void* dato, unsigned tam, int (*comparar)(const void* a, const void* b));
 int insertarOrdenadoEnListaSimple(t_lista* pl, const void* dato, unsigned tam, int (*comparar)(const void* a, const void* b));
-int insertarPrimeroEnListaSimple(t_lista *pl, const void *dato, unsigned tam);
+
 void insertarArchivoBinarioEnListaSimple(FILE* pf, t_lista* pl, void* dato, unsigned tam, int (*comparar)(const void* a, const void* b));
 
 void swapDeNodos(t_nodo** nodo1, t_nodo** nodo2);

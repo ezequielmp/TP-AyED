@@ -5,30 +5,6 @@ void crearListaSimple(t_lista* pl)
     *pl = NULL;
 }
 
-int insertarPrimeroEnListaSimple(t_lista *pl, const void *dato, unsigned tam)
-{
-    t_nodo* nuevoNodo;
-
-    nuevoNodo = malloc(sizeof(t_nodo));
-    if(NULL == nuevoNodo)
-    {
-        return NO_PUDE_INSERTAR;
-    }
-    nuevoNodo->dato = malloc(tam);
-    if(NULL == nuevoNodo->dato)
-    {
-        free(nuevoNodo);
-        return NO_PUDE_INSERTAR;
-    }
-
-    memcpy(nuevoNodo->dato, dato, tam);
-    nuevoNodo->tam = tam;
-    nuevoNodo->sig = *pl;
-
-    *pl = nuevoNodo;
-    return OK;
-}
-
 int insertarAlFinalEnListaSimple(t_lista* pl, const void* dato, unsigned tam)
 {
     t_nodo* nuevoNodo;
