@@ -169,3 +169,59 @@
 	"funciones.h"
 	"menu.h"
 
+1729899961 source:c:\dev\ayed\tp\tp-ayed-ezequiel\biblioteca\src\generico.c
+	"../include/generico.h"
+
+1729899961 c:\dev\ayed\tp\tp-ayed-ezequiel\biblioteca\include\generico.h
+	<stdio.h>
+	<stdlib.h>
+	<string.h>
+
+1730103356 source:c:\dev\ayed\tp\tp-ayed-ezequiel\biblioteca\src\listasimple\listasimple.c
+	"../../include/listaSimple/listaSimple.h"
+
+1729899961 c:\dev\ayed\tp\tp-ayed-ezequiel\biblioteca\include\listasimple\listasimple.h
+	<stdlib.h>
+	<stdio.h>
+	<string.h>
+	<time.h>
+
+1730103885 source:c:\dev\ayed\tp\tp-ayed-ezequiel\funciones.c
+	"funciones.h"
+	"menu.h"
+	"vector.h"
+
+1730101937 c:\dev\ayed\tp\tp-ayed-ezequiel\funciones.h
+	<stdio.h>
+	<stdlib.h>
+	<ctype.h>
+	<curl/curl.h>
+	"./Biblioteca/include/generico.h"
+	"config.h"
+	<string.h>
+	<windows.h>
+	<time.h>
+	"./Biblioteca/include/listaSimple/listaSimple.h"
+
+1729899961 c:\dev\ayed\tp\tp-ayed-ezequiel\config.h
+
+1729899961 c:\dev\ayed\tp\tp-ayed-ezequiel\menu.h
+	<stdlib.h>
+	"config.h"
+	"./Biblioteca/include/listaSimple/listaSimple.h"
+
+1729899961 c:\dev\ayed\tp\tp-ayed-ezequiel\vector.h
+	<stdlib.h>
+	<string.h>
+
+1730039912 source:c:\dev\ayed\tp\tp-ayed-ezequiel\main.c
+	"funciones.h"
+	"menu.h"
+
+1730010079 source:c:\dev\ayed\tp\tp-ayed-ezequiel\menu.c
+	"menu.h"
+	"funciones.h"
+
+1729899961 source:c:\dev\ayed\tp\tp-ayed-ezequiel\vector.c
+	"vector.h"
+

@@ -17,7 +17,15 @@
 #define TAM 100
 #define TAM_LINEA 100
 #define TAM_VECTOR_CONFIG 3
+///
+#define TAM_NOMBRE_REPORTE_ARCHIVO 100
+///
 #define ERR_ARCH_CONFIG 0
+///
+#define ERR_ARCH_REPORTE 0
+///
+#define FORMATO_NOMBRE_ARCH_REPORTE "informe-juego_%Y-%m-%d-%H-%M.txt"
+///
 #define ERR_FORMATO_ARCH 0
 #define ERR_FORMATO_ARCH_DUPLICADO 0
 #define SALIR 0
@@ -36,6 +44,7 @@ typedef struct
 {
     int id;
     char nya[TAM];
+    int puntajeJugador;
 } tJugador;
 
 typedef struct
@@ -64,5 +73,10 @@ int cmpConfigNivel (const void* a, const void* b);
 int ingresarSecuencia(t_lista *ingresos, unsigned cantIngresos, unsigned milisegundos, char *secuencia, unsigned *cantidadIngresos);
 unsigned ingresarVidas(unsigned cantUsable, unsigned vidasDisp);
 void transformarCad(char *cad, char *vec, unsigned cantElem, unsigned cantVec);
+
+///
+void escribirArchivoReporte(FILE* fpArch, const char* nombreJugador, t_lista* listaJugadores, unsigned ronda, const char* secuenciaMostrada, t_lista* respuestaJugador,
+                            unsigned puntajeObtenidoPorPregunta, unsigned cantVidasUsadas, int puntajeMaximo);
+int crearNombreArchivoReporte (char* nombreArchReporte);
 
 #endif // FUNCIONES_H_INCLUDED

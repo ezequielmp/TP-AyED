@@ -1,5 +1,10 @@
 #include "funciones.h"
 #include "menu.h"
+/// COMENTARIOS
+/**
+ FALTA PONER UN TOLOWER O TOUPPER EN LA FUNCION DE INGRESAR OPCION
+ EN FUNCION BUSCARCLAVEVECTOR EN LA LINEA 17 HAY QUE PONER NO_ENCONTRADO
+ */
 
 int main(int argc, char* argv[])
 {
@@ -13,7 +18,7 @@ int main(int argc, char* argv[])
     };
     unsigned cantidadDeRegistros = sizeof(textoMenuPrincipal) / MAX_TAM_TEXTO;
 
-    crearLoteDePrueba(argv[NOMBRE_ARCH_CONFIG]);
+    crearLoteDePrueba(*(argv + NOMBRE_ARCH_CONFIG));
     crearListaSimple(&recursos.listaDeJugadores);
 
     //LEER ARCHIVO CONFIGURACIONES

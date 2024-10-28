@@ -173,7 +173,7 @@ int ingresarSecuencia(t_lista *ingresos, unsigned cantIngresos, unsigned tiempo,
             }
             (*cantidadIngresos)++;
 
-            insertarPrimeroEnListaSimple(ingresos, &respuesta, sizeof(char));
+            insertarAlFinalEnListaSimple(ingresos, &respuesta, sizeof(char));
         }
 
         tiempoPasado = clock() - tiempoIni <= tiempo * 1000;
@@ -193,7 +193,7 @@ unsigned ingresarVidas(unsigned cantUsable, unsigned vidasDisp)
 {
     int vidasIngresadas;
 
-    printf("Tiene la oportunidad de usar vidas para retroceder 1 jugada por vida. Tiene %u vidas disponibles �Cuantas vidas quiere usar?\n", vidasDisp);
+    printf("Tiene la oportunidad de usar vidas para retroceder 1 jugada por vida. Tiene %u vidas disponibles ¿Cuantas vidas quiere usar?\n", vidasDisp);
 
     do
     {
@@ -226,10 +226,28 @@ unsigned ingresarVidas(unsigned cantUsable, unsigned vidasDisp)
 void rondas(void *recursos, tConfig *dificultad)
 {
     int turno = 1, ronda = 1, result;
+
+    ///
+    int cantPuntajeRonda = 0;
+    int cantPuntajeRondaTotalJugador = 0;
+    int puntajeMaximo = 0;
+    char nombreArchivo[TAM_NOMBRE_REPORTE_ARCHIVO];
+    t_nodo* jugadorActual = ((tRecursosMenu*)recursos)->listaDeJugadores;
+    ///
+
     char *secuencia = ((tRecursosMenu*)recursos)->secuencia;
     t_lista lista;
     unsigned cantIngresos;
     unsigned vidas = dificultad->cantVidas, vidasUsadas = 0;
+
+    ///
+    crearNombreArchivoReporte(nombreArchivo);
+    FILE* fp;
+    if(!abrirArchivo(&fp, nombreArchivo, "wt"))
+    {
+        return;
+    }
+    ///
 
     crearListaSimple(&lista);
     while(turno <= ((tRecursosMenu*)recursos)->cantidadDeJugadores)
@@ -273,22 +291,120 @@ void rondas(void *recursos, tConfig *dificultad)
             printf("No tiene mas vidas, usted ha perdido\n");
             system("pause");
             system("cls");
-
+            ///
+            if(cantPuntajeRondaTotalJugador > puntajeMaximo)
+            {
+                puntajeMaximo = cantPuntajeRondaTotalJugador;
+            }
+            ((tJugador*)jugadorActual->dato)->puntajeJugador = cantPuntajeRondaTotalJugador;
+            cantPuntajeRonda = 0;
+            escribirArchivoReporte(fp, ((tJugador*)jugadorActual->dato)->nya, NULL, ronda, secuencia, &lista, cantPuntajeRonda, vidasUsadas, puntajeMaximo);
+            cantPuntajeRondaTotalJugador = 0;
+            ///
             secuencia += ronda; ///VER QUE NO NOS QUEDEMOS SIN NUMEROS
             turno++;
             ronda = 1;
             vidas = dificultad->cantVidas;
+            jugadorActual = jugadorActual->sig;
         }
         else
         {
             if(result == TODO_OK)
             {
+                ///
+                cantPuntajeRonda = (vidasUsadas > 0) ? 1 : 3; // +1 si uso una vida o +3 si ingreso la secuencia sin errores
+                cantPuntajeRondaTotalJugador += cantPuntajeRonda; // Sumo la cantidad de puntos totales por ronda
+                ((tJugador*)jugadorActual->dato)->puntajeJugador = cantPuntajeRondaTotalJugador;
+                escribirArchivoReporte(fp, ((tJugador*)jugadorActual->dato)->nya, NULL, ronda, secuencia, &lista, cantPuntajeRonda, vidasUsadas, puntajeMaximo);
+                ///
                 ronda++;
             }
         }
     }
 
+    ///
+    vaciarListaSimple(&lista);///LIBERO MEMORIA DE LA LISTA
+    escribirArchivoReporte(fp, NULL, &((tRecursosMenu*)recursos)->listaDeJugadores, ronda, NULL, NULL, cantPuntajeRonda, vidasUsadas, puntajeMaximo);
+
+    jugadorActual = ((tRecursosMenu*)recursos)->listaDeJugadores;
+    if(puntajeMaximo != 0)
+    {
+        printf("GANADORES DEL JUEGO: \n");
+        while(jugadorActual != NULL)
+        {
+            if(((tJugador*)jugadorActual->dato)->puntajeJugador == puntajeMaximo)
+                printf("%s\n",((tJugador*)jugadorActual->dato)->nya);
+            jugadorActual = jugadorActual->sig;
+        }
+    }
+    else
+    {
+        printf("Nadie gano...\n");
+    }
+
+    fclose(fp);
+    ///
+
     //mostrarListaSimpleEnOrden(&lista, mostrarCaracter);
+}
+
+int crearNombreArchivoReporte (char* nombreArchReporte)
+{
+    time_t ahora = time(NULL);
+    struct tm *t = localtime(&ahora);
+    strftime(nombreArchReporte, 100, FORMATO_NOMBRE_ARCH_REPORTE, t);
+    return TODO_OK;
+}
+
+void escribirArchivoReporte(FILE* fpArch, const char* nombreJugador, t_lista* listaJugadores, unsigned ronda, const char* secuenciaMostrada, t_lista* respuestaJugador,
+                            unsigned puntajeObtenidoPorPregunta, unsigned cantVidasUsadas, int puntajeMaximo)
+{
+    //Imprime el nombre del jugador
+    if(nombreJugador != NULL)
+    {
+        fprintf(fpArch, "Jugador: %s", nombreJugador);
+    }
+
+    //Imprime la secuencia mostrada y la respuesta del jugador
+    if(secuenciaMostrada != NULL && respuestaJugador != NULL)
+    {
+        fprintf(fpArch, "Ronda: %d\nSecuencia Mostrada: ", ronda);
+
+        //Imprime la secuencia mostrada
+        for (unsigned i = 0; i < ronda; i++)
+        {
+            fprintf(fpArch, "%c", *secuenciaMostrada);
+            secuenciaMostrada++;
+        }
+
+        fprintf(fpArch, "\nRespuesta: ");
+
+        //Recorrer y mostrar la lista respuestaJugador
+        t_nodo* nodoRespuesta = *respuestaJugador;
+        while(nodoRespuesta != NULL)
+        {
+            fprintf(fpArch, "%c", *(char*)(nodoRespuesta->dato));
+            nodoRespuesta = nodoRespuesta->sig;
+        }
+
+        fprintf(fpArch, "\nPuntaje de la ronda: %d\nVidas usadas: %d\n\n", puntajeObtenidoPorPregunta, cantVidasUsadas);
+    }
+
+    //Imprime la lista de ganadores (jugadores con el puntaje máximo)
+    if(listaJugadores != NULL && puntajeMaximo != 0)
+    {
+        fprintf(fpArch, "Jugador/es ganadores: \n");
+        t_nodo* nodoJugador = *listaJugadores;
+        while (nodoJugador != NULL)
+        {
+            tJugador* jugador = (tJugador*)nodoJugador->dato;
+            if (jugador->puntajeJugador == puntajeMaximo)
+            {
+                fprintf(fpArch, "%s\n", jugador->nya);
+            }
+            nodoJugador = nodoJugador->sig;
+        }
+    }
 }
 
 void eliminarCaracter(char *cad, char caracter, unsigned longitud)

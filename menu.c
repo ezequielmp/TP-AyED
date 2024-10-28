@@ -28,6 +28,7 @@ tConfig* detallesJuego(tConfig* config)
     printf("Tiempo que se muestra la secuencia: %i\n", elemento->tiempoSecuenciaEnPantalla);
     printf("Tiempo para contestar: %u\n", elemento->tiempoContestar);
     printf("Cantidad de vidas: %u\n", elemento->cantVidas);
+    printf("Teclas validas: A, R, V, N y Z (Z es para retroceder)\n");
     printf("-------------------------------------------\n");
     system("pause");
     system("cls");
