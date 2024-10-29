@@ -18,7 +18,7 @@ int main(int argc, char* argv[])
     };
     unsigned cantidadDeRegistros = sizeof(textoMenuPrincipal) / MAX_TAM_TEXTO;
 
-    //crearLoteDePrueba(*(argv + NOMBRE_ARCH_CONFIG));
+    crearLoteDePrueba(*(argv + NOMBRE_ARCH_CONFIG));
     crearListaSimple(&recursos.listaDeJugadores);
 
     //LEER ARCHIVO CONFIGURACIONES
@@ -26,8 +26,7 @@ int main(int argc, char* argv[])
     {
         return ERR_ARCH_CONFIG;
     }
-
+    /// TODO: QUE EL SELECTOR DE OPCIÓN SE PASE COMO ARGUMENTO A ESTA FUNCIÓN
     menuNuevo(textoMenuPrincipal, cantidadDeRegistros, &recursos, vectorConfig, switchMenu);
-    //menu(textoMenuPrincipal, cantidadDeRegistros, switchTextoMenu, &recursos, DESACTIVAR_AYUDA_AL_USUARIO);
     return 0;
 }

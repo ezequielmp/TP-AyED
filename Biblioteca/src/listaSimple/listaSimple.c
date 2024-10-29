@@ -168,6 +168,15 @@ int listaSimpleVacia(const t_lista* pl)
     return NULL == *pl;
 }
 
+void mapListaSimpleParam(const t_lista* pl, void accion(const void*, void*), const void* param)
+{
+    while(*pl)
+    {
+        accion(param, (*pl)->dato);
+        pl = &(*pl)->sig;
+    }
+}
+
 void mapInversoListaSimpleParam(const t_lista* pl, void accion(const void*, void*), const void* param1)
 {
     if(!*pl)

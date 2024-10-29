@@ -59,7 +59,7 @@ void mostrarJugador(const void* dato)
 int ingresoDeNombresAListaSimple(t_lista* listaDeJugadores, unsigned* cantidadDeJugadores)
 {
     tJugador jugador;
-    unsigned ingresoNombres = 1;
+    unsigned ingresoNombres = 1, cont;
 
     jugador.id = 0;
     *cantidadDeJugadores = 0;
@@ -71,7 +71,7 @@ int ingresoDeNombresAListaSimple(t_lista* listaDeJugadores, unsigned* cantidadDe
         printf("Ingrese '-' para finalizar\n");
         printf("\nIngrese nombre ID = %d:\t", jugador.id + 1);
         fflush(stdin);
-        fgets(jugador.nya, TAM, stdin);
+        fgets(jugador.nya, TAM_NOM, stdin);
 
         *(jugador.nya) = ES_LETRA(*(jugador.nya)) ? A_MAYUS(*(jugador.nya)) : *(jugador.nya);
 
@@ -88,8 +88,12 @@ int ingresoDeNombresAListaSimple(t_lista* listaDeJugadores, unsigned* cantidadDe
             }
             else
             {
+                cont = 0;
                 jugador.id++;
                 *cantidadDeJugadores = jugador.id;
+                while(cont < TAM_NOM && *(jugador.nya + cont) != '\n')
+                    cont++;
+                *(jugador.nya + cont) = '\0';
                 insertarAlFinalEnListaSimple(listaDeJugadores, &jugador, sizeof(tJugador));
             }
         }
@@ -142,24 +146,25 @@ void juego(void* recursos, tConfig* config)
     }
 }
 
-void mostrarSecuencia(char *secuencia, unsigned cant, unsigned milisegundos)
+void mostrarSecuencia(t_lista *secuencia, unsigned cant, unsigned milisegundos)
 {
     int i;
+    char secuenciaChar;
 
     printf("Secuencia: ");
     for(i = 0; i < cant; i++)
     {
-        printf("%c\t", *secuencia);
-        secuencia++;
+        buscarPorIndiceEnListaSimple(secuencia, &secuenciaChar, sizeof(char), i);
+        printf("%c\t", secuenciaChar);
         Sleep(milisegundos / cant);
     }
 }
 
-int ingresarSecuencia(t_lista *ingresos, unsigned cantIngresos, unsigned tiempo, char *secuencia, unsigned *cantidadIngresos)
+int ingresarSecuencia(t_lista *ingresos, unsigned cantIngresos, unsigned tiempo, t_lista *secuencia, unsigned *cantidadIngresos)
 {
     clock_t tiempoIni = clock();
     int incorrecto, tiempoPasado = 0, i;
-    char respuesta;
+    char respuesta, caracterSecuencia;
     int correctas = 0;
 
     if(*cantidadIngresos)
@@ -168,11 +173,14 @@ int ingresarSecuencia(t_lista *ingresos, unsigned cantIngresos, unsigned tiempo,
         for(i = 0; i < *cantidadIngresos; i++)
         {
             buscarPorIndiceEnListaSimple(ingresos, &respuesta, sizeof(char), *cantidadIngresos - i - 1);
+            buscarPorIndiceEnListaSimple(secuencia, &caracterSecuencia, sizeof(char), i);
+
             printf("%c", respuesta);
 
-            if(respuesta == *(secuencia + *cantidadIngresos - i - 1))
+            if(respuesta == caracterSecuencia)
                 correctas++;
         }
+        printf("\n");
     }
     printf("Ingrese la secuencia mostrada por pantalla letra por letra, una a la vez:\n");
 
@@ -182,6 +190,7 @@ int ingresarSecuencia(t_lista *ingresos, unsigned cantIngresos, unsigned tiempo,
         {
             fflush(stdin);
             scanf("%c", &respuesta);
+            respuesta = toupper(respuesta);
             incorrecto = respuesta != 'R' && respuesta != 'N' && respuesta != 'A' && respuesta != 'V' && respuesta != 'Z';
             if(incorrecto)
                 printf("Caracter invalido, ingrese nuevamente.\n");
@@ -191,7 +200,9 @@ int ingresarSecuencia(t_lista *ingresos, unsigned cantIngresos, unsigned tiempo,
         {
             if(respuesta == 'Z')
                 return VIDAS;
-            if(*(secuencia + *cantidadIngresos) == toupper(respuesta))
+            buscarPorIndiceEnListaSimple(secuencia, &caracterSecuencia, sizeof(char), *cantidadIngresos);
+
+            if(caracterSecuencia == toupper(respuesta))
             {
                 correctas++;
             }
@@ -265,7 +276,7 @@ void escribirNombre(const void* param1, void* dato)
     fprintf((void*)param1, "%s\n", ((tJugador*)dato)->nya);
 }
 
-int usarVidas(t_lista *ingresos, unsigned ronda, unsigned *vidasRestantes, unsigned *vidasUsadas, unsigned *cantIngresos, char *secuencia, tConfig *dificultad)
+int usarVidas(t_lista *ingresos, unsigned ronda, unsigned *vidasRestantes, unsigned *vidasUsadas, unsigned *cantIngresos, t_lista *secuencia, tConfig *dificultad)
 {
     int result, i, vidasPorCiclo;
     *vidasUsadas = 0;
@@ -322,7 +333,7 @@ void rondas(void *recursos, tConfig *dificultad)
     ///
 
     char *secuencia = ((tRecursosMenu*)recursos)->secuencia;
-    t_lista lista;
+    t_lista lista, listaSecuencia;
     unsigned cantIngresos;
     unsigned vidas = dificultad->cantVidas, vidasUsadas = 0;
 
@@ -336,73 +347,80 @@ void rondas(void *recursos, tConfig *dificultad)
     ///
     buscarPorIndiceEnListaSimple(&((tRecursosMenu*)recursos)->listaDeJugadores, &jugadorActual, sizeof(tJugador), 0);
     crearListaSimple(&lista);
+    crearListaSimple(&listaSecuencia);
+    insertarAlFinalEnListaSimple(&listaSecuencia, secuencia, sizeof(char));
     while(turno <= ((tRecursosMenu*)recursos)->cantidadDeJugadores)
     {
         system("cls");
         cantIngresos = 0;
         printf("Turno %d | ronda %d:\n", turno, ronda);
-        mostrarSecuencia(secuencia, ronda, (dificultad->tiempoSecuenciaEnPantalla + ronda) * 1000);
+        mostrarSecuencia(&listaSecuencia, ronda, (dificultad->tiempoSecuenciaEnPantalla + ronda) * 1000);
         system("cls");
-        result = ingresarSecuencia(&lista, ronda, dificultad->tiempoContestar, secuencia, &cantIngresos);
+        result = ingresarSecuencia(&lista, ronda, dificultad->tiempoContestar, &listaSecuencia, &cantIngresos);
 
         if(result == VIDAS)
-            result = usarVidas(&lista, ronda, &vidas, &vidasUsadas, &cantIngresos, secuencia, dificultad);
+            result = usarVidas(&lista, ronda, &vidas, &vidasUsadas, &cantIngresos, &listaSecuencia, dificultad);
 
-        if(result == PERDER)
+        if(result != VIDAS)
         {
-            printf("No puede usar vidas, usted ha perdido\n");
-            system("pause");
-            system("cls");
-            ///
-            if(cantPuntajeRondaTotalJugador > puntajeMaximo)
+            if(result == PERDER)
             {
-                puntajeMaximo = cantPuntajeRondaTotalJugador;
-                ActualizarPorIndiceEnListaSimple(&((tRecursosMenu*)recursos)->listaDeJugadores, &jugadorActual, sizeof(tJugador), turno - 1);
-            }
-
-            jugadorActual.puntajeJugador = cantPuntajeRondaTotalJugador;
-            cantPuntajeRonda = 0;
-            escribirArchivoReporte(fp, jugadorActual.nya, ronda, secuencia, &lista, cantPuntajeRonda, vidasUsadas);
-            cantPuntajeRondaTotalJugador = 0;
-            vidasUsadas = 0;
-            ///
-            if(((tRecursosMenu*)recursos)->longitudSecuencia - ronda <= 0)
-                if((((tRecursosMenu*)recursos)->longitudSecuencia = solicitarAPI(URL, (((tRecursosMenu*)recursos)->secuencia), TAM, colores, sizeof(colores))) == ERROR_CURL)
-                {
-                    printf("Ocurrio un error al solicitar la API");
-                    fclose(fp);
-                    exit(-1);
-                }
-            ((tRecursosMenu*)recursos)->longitudSecuencia -= ronda;
-            secuencia += ronda; ///VER QUE NO NOS QUEDEMOS SIN NUMEROS
-            turno++;
-            ronda = 1;
-            vidas = dificultad->cantVidas;
-            buscarPorIndiceEnListaSimple(&((tRecursosMenu*)recursos)->listaDeJugadores, &jugadorActual, sizeof(tJugador), turno - 1);
-        }
-        else
-        {
-            if(result == TODO_OK)
-            {
+                printf("No puede usar vidas y su ingreso fue incorrecto, usted ha perdido\n");
+                system("pause");
+                system("cls");
                 ///
-                if(((tRecursosMenu*)recursos)->longitudSecuencia - ronda - 1 <= 0)
+                escribirArchivoReporte(fp, jugadorActual.nya, ronda, &listaSecuencia, &lista, 0, vidasUsadas);
+                jugadorActual.puntajeJugador = cantPuntajeRondaTotalJugador;
+                if(cantPuntajeRondaTotalJugador > puntajeMaximo)
                 {
-                    memcpy(((tRecursosMenu*)recursos)->secuencia, secuencia, ronda);
-                    if((((tRecursosMenu*)recursos)->longitudSecuencia = solicitarAPI(URL, (((tRecursosMenu*)recursos)->secuencia), TAM, colores, sizeof(colores))) == ERROR_CURL)
+                    puntajeMaximo = cantPuntajeRondaTotalJugador;
+                    ActualizarPorIndiceEnListaSimple(&((tRecursosMenu*)recursos)->listaDeJugadores, &jugadorActual, sizeof(tJugador), turno - 1);
+                }
+
+                fprintf(fp, "Puntaje final del jugador %s: %d\n", jugadorActual.nya, cantPuntajeRondaTotalJugador);
+
+                cantPuntajeRonda = 0;
+                cantPuntajeRondaTotalJugador = 0;
+                ///
+
+                ((tRecursosMenu*)recursos)->longitudSecuencia -= ronda;
+                secuencia += ronda; ///VER QUE NO NOS QUEDEMOS SIN NUMEROS
+                turno++;
+                ronda = 1;
+                vidas = dificultad->cantVidas;
+                vaciarListaSimple(&listaSecuencia);
+                buscarPorIndiceEnListaSimple(&((tRecursosMenu*)recursos)->listaDeJugadores, &jugadorActual, sizeof(tJugador), turno - 1);
+            }
+            else
+            {
+                if(result == TODO_OK)
+                {
+                    cantPuntajeRonda = (vidasUsadas > 0) ? 1 : 3; // +1 si uso una vida o +3 si ingreso la secuencia sin errores
+                    cantPuntajeRondaTotalJugador += cantPuntajeRonda; // Sumo la cantidad de puntos totales por ronda
+                    escribirArchivoReporte(fp, jugadorActual.nya, ronda, &listaSecuencia, &lista, cantPuntajeRonda, vidasUsadas);
+                    ///
+                    ronda++;
+                    secuencia++;
+                    ((tRecursosMenu*)recursos)->longitudSecuencia--;
+                    if(((tRecursosMenu*)recursos)->longitudSecuencia <= 0)
                     {
-                        printf("Ocurrio un error al solicitar la API");
-                        fclose(fp);
-                        exit(-1);
+                        if((((tRecursosMenu*)recursos)->longitudSecuencia = solicitarAPI(URL, (((tRecursosMenu*)recursos)->secuencia), TAM, colores, sizeof(colores))) == ERROR_CURL)
+                        {
+                            printf("Ocurrio un error al solicitar la API");
+                            fclose(fp);
+                            exit(-1);
+                        }
+                        secuencia = ((tRecursosMenu*)recursos)->secuencia;
                     }
                 }
-                cantPuntajeRonda = (vidasUsadas > 0) ? 1 : 3; // +1 si uso una vida o +3 si ingreso la secuencia sin errores
-                cantPuntajeRondaTotalJugador += cantPuntajeRonda; // Sumo la cantidad de puntos totales por ronda
-                jugadorActual.puntajeJugador = cantPuntajeRondaTotalJugador;
-                escribirArchivoReporte(fp, jugadorActual.nya, ronda, secuencia, &lista, cantPuntajeRonda, vidasUsadas);
-                vidasUsadas = 0;
-                ///
-                ronda++;
             }
+            if(insertarAlFinalEnListaSimple(&listaSecuencia, secuencia, sizeof(char)) == NO_PUDE_INSERTAR)
+            {
+                printf("Memoria insuficiente");
+                fclose(fp);
+                exit(-1);
+            }
+            vidasUsadas = 0;
         }
         vaciarListaSimple(&lista);
     }
@@ -437,7 +455,7 @@ int crearNombreArchivoReporte (char* nombreArchReporte)
     return TODO_OK;
 }
 
-void escribirArchivoReporte(FILE* fpArch, const char* nombreJugador, unsigned ronda, const char* secuenciaMostrada, const t_lista* respuestaJugador,
+void escribirArchivoReporte(FILE* fpArch, const char* nombreJugador, unsigned ronda, const t_lista *secuenciaMostrada, const t_lista* respuestaJugador,
                             unsigned puntajeObtenidoPorPregunta, unsigned cantVidasUsadas)
 {
     //Imprime el nombre del jugador
@@ -446,11 +464,7 @@ void escribirArchivoReporte(FILE* fpArch, const char* nombreJugador, unsigned ro
     //Imprime la secuencia mostrada y la respuesta del jugador
     fprintf(fpArch, "Ronda: %d\nSecuencia Mostrada: ", ronda);
     //Imprime la secuencia mostrada
-    for (unsigned i = 0; i < ronda; i++)
-    {
-        fprintf(fpArch, "%c", *secuenciaMostrada);
-        secuenciaMostrada++;
-    }
+    mapListaSimpleParam(secuenciaMostrada, escribirChar, fpArch);
 
     fprintf(fpArch, "\nRespuesta: ");
     if(!listaSimpleVacia(respuestaJugador))

@@ -41,5 +41,6 @@ void mapInversoListaSimpleParam(const t_lista* pl, void accion(const void*, void
 void dejarSoloClave(t_lista *pl, const void *dato, int cmp(const void*, const void*));
 int ActualizarPorIndiceEnListaSimple(t_lista *pl, void *dato, unsigned tam, unsigned indice);
 void mapInversoListaSimple(const t_lista* pl, void accion(const void*));
+void mapListaSimpleParam(const t_lista* pl, void accion(const void*, void*), const void* param);
 
 #endif // LISTASIMPLE_H_INCLUDED

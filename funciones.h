@@ -16,6 +16,7 @@
 #define CANT_BYTES 30
 #define TAM 100
 #define TAM_LINEA 100
+#define TAM_NOM 16
 #define TAM_VECTOR_CONFIG 3
 ///
 #define TAM_NOMBRE_REPORTE_ARCHIVO 100
@@ -65,18 +66,18 @@ void juego(void* recursos, tConfig* config);
 int pedirNumeros(const char *url, char *buffer, unsigned cant);
 
 void crearLoteDePrueba (const char* nombreArch);
-void mostrarSecuencia(char *secuencia, unsigned cant, unsigned milisegundos);
+void mostrarSecuencia(t_lista *secuencia, unsigned cant, unsigned milisegundos);
 int leerArchivoConfig (const char* nombreArch, tConfig* vecConfig);
 void trozarArchivoVariable (char* s, tConfig* d);
 void rondas(void *recursos, tConfig *dificultad);
 void mostrarCaracter(const void* dato);
 int cmpConfigNivel (const void* a, const void* b);
-int ingresarSecuencia(t_lista *ingresos, unsigned cantIngresos, unsigned milisegundos, char *secuencia, unsigned *cantidadIngresos);
+int ingresarSecuencia(t_lista *ingresos, unsigned cantIngresos, unsigned tiempo, t_lista *secuencia, unsigned *cantidadIngresos);
 unsigned ingresarVidas(unsigned cantUsable, unsigned vidasDisp);
 void transformarCad(char *cad, char *vec, unsigned cantElem, unsigned cantVec);
 
 ///
-void escribirArchivoReporte(FILE* fpArch, const char* nombreJugador, unsigned ronda, const char* secuenciaMostrada, const t_lista* respuestaJugador,
+void escribirArchivoReporte(FILE* fpArch, const char* nombreJugador, unsigned ronda, const t_lista *secuenciaMostrada, const t_lista* respuestaJugador,
                             unsigned puntajeObtenidoPorPregunta, unsigned cantVidasUsadas);
 int crearNombreArchivoReporte (char* nombreArchReporte);
 
