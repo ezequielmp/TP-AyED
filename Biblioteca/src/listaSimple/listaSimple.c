@@ -29,6 +29,70 @@ int insertarPrimeroEnListaSimple(t_lista *pl, const void *dato, unsigned tam)
     return OK;
 }
 
+int buscarPorIndiceEnListaSimple(t_lista *pl, void *dato, unsigned tam, unsigned indice)
+{
+    unsigned pos = 0;
+
+    if(NULL == *pl)
+    {
+        return NO_HAY_ELEMENTOS;
+    }
+
+    while(*pl && pos < indice)
+    {
+        pl = &(*pl)->sig;
+        pos++;
+    }
+
+    if(*pl == NULL)
+        return NO_ENCONTRADO;
+
+    memcpy(dato, (*pl)->dato, MENOR(tam, (*pl)->tam));
+
+    return OK;
+}
+
+int ActualizarPorIndiceEnListaSimple(t_lista *pl, void *dato, unsigned tam, unsigned indice)
+{
+    unsigned pos = 0;
+
+    if(NULL == *pl)
+    {
+        return NO_HAY_ELEMENTOS;
+    }
+
+    while(*pl && pos < indice)
+    {
+        pl = &(*pl)->sig;
+        pos++;
+    }
+
+    if(*pl == NULL)
+        return NO_ENCONTRADO;
+
+    memcpy((*pl)->dato, dato, MENOR(tam, (*pl)->tam));
+
+    return OK;
+}
+
+void dejarSoloClave(t_lista *pl, const void *dato, int cmp(const void*, const void*))
+{
+    t_nodo* elim;
+
+    while(*pl)
+    {
+        if(cmp(dato, (*pl)->dato) != 0)
+        {
+            elim = *pl;
+            *pl = elim->sig;
+            free(elim->dato);
+            free(elim);
+        }
+        else
+            pl = &(*pl)->sig;
+    }
+}
+
 int insertarAlFinalEnListaSimple(t_lista* pl, const void* dato, unsigned tam)
 {
     t_nodo* nuevoNodo;
@@ -103,6 +167,25 @@ int listaSimpleVacia(const t_lista* pl)
 {
     return NULL == *pl;
 }
+
+void mapInversoListaSimpleParam(const t_lista* pl, void accion(const void*, void*), const void* param1)
+{
+    if(!*pl)
+        return;
+
+    mapInversoListaSimpleParam(&(*pl)->sig, accion, param1);
+    accion(param1, (*pl)->dato);
+}
+
+void mapInversoListaSimple(const t_lista* pl, void accion(const void*))
+{
+    if(!*pl)
+        return;
+
+    mapInversoListaSimple(&(*pl)->sig, accion);
+    accion((*pl)->dato);
+}
+
 
 //int insertarOrdenadoSinDuplicados(t_lista* pl, const void* dato, unsigned tam, int (*comparar)(const void* a, const void* b))
 //{

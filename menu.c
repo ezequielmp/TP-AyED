@@ -43,6 +43,7 @@ void cargarOpcion(char* op)
         printf("\nIngrese una opcion: ");
         scanf("%c", op);
         getchar();
+        *op = toupper(*op);
 
         if (*op != 'A' && *op != 'B') {
             printf("\nOpcion incorrecta\n");

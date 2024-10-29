@@ -1,0 +1,24 @@
+Jugador: EZE
+
+Ronda: 1
+Secuencia Mostrada: V
+Respuesta: V
+Puntaje de la ronda: 3
+Vidas usadas: 0
+
+Jugador: EZE
+
+Ronda: 2
+Secuencia Mostrada: VA
+Respuesta: VA
+Puntaje de la ronda: 3
+Vidas usadas: 0
+
+Jugador: EZE
+
+Ronda: 3
+Secuencia Mostrada: VAV
+Respuesta: VAV
+Puntaje de la ronda: 1
+Vidas usadas: 2
+

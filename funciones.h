@@ -52,6 +52,7 @@ typedef struct
     t_lista listaDeJugadores;
     unsigned cantidadDeJugadores;
     char secuencia[TAM];
+    unsigned longitudSecuencia;
 } tRecursosMenu;
 
 size_t WriteCallback(char* contents, size_t tamanyo, size_t nmemb, void *userp);
@@ -75,8 +76,8 @@ unsigned ingresarVidas(unsigned cantUsable, unsigned vidasDisp);
 void transformarCad(char *cad, char *vec, unsigned cantElem, unsigned cantVec);
 
 ///
-void escribirArchivoReporte(FILE* fpArch, const char* nombreJugador, t_lista* listaJugadores, unsigned ronda, const char* secuenciaMostrada, t_lista* respuestaJugador,
-                            unsigned puntajeObtenidoPorPregunta, unsigned cantVidasUsadas, int puntajeMaximo);
+void escribirArchivoReporte(FILE* fpArch, const char* nombreJugador, unsigned ronda, const char* secuenciaMostrada, const t_lista* respuestaJugador,
+                            unsigned puntajeObtenidoPorPregunta, unsigned cantVidasUsadas);
 int crearNombreArchivoReporte (char* nombreArchReporte);
 
 #endif // FUNCIONES_H_INCLUDED

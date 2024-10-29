@@ -18,7 +18,7 @@ int main(int argc, char* argv[])
     };
     unsigned cantidadDeRegistros = sizeof(textoMenuPrincipal) / MAX_TAM_TEXTO;
 
-    crearLoteDePrueba(*(argv + NOMBRE_ARCH_CONFIG));
+    //crearLoteDePrueba(*(argv + NOMBRE_ARCH_CONFIG));
     crearListaSimple(&recursos.listaDeJugadores);
 
     //LEER ARCHIVO CONFIGURACIONES

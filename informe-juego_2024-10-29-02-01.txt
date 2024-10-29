@@ -1,0 +1,43 @@
+Jugador: EZE
+
+Ronda: 1
+Secuencia Mostrada: V
+Respuesta: V
+Puntaje de la ronda: 3
+Vidas usadas: 0
+
+Jugador: EZE
+
+Ronda: 2
+Secuencia Mostrada: VR
+Respuesta: VR
+Puntaje de la ronda: 3
+Vidas usadas: 0
+
+Jugador: EZE
+
+Ronda: 3
+Secuencia Mostrada: VRN
+Respuesta: VRN
+Puntaje de la ronda: 3
+Vidas usadas: 0
+
+Jugador: EZE
+
+Ronda: 4
+Secuencia Mostrada: VRNN
+Respuesta: VRNN
+Puntaje de la ronda: 3
+Vidas usadas: 0
+
+Jugador: EZE
+
+Ronda: 5
+Secuencia Mostrada: VRNNV
+Respuesta: N
+Puntaje de la ronda: 0
+Vidas usadas: 0
+
+GANADORES DEL JUEGO:
+EZE
+
