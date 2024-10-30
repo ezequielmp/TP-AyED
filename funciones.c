@@ -2,9 +2,6 @@
 #include "menu.h"
 #include "vector.h"
 #define ES_LETRA(X) (((X) >= 'a' && (X) <= 'z') || ((X) >= 'A' && (X) <= 'Z'))
-#define A_MAYUS(X) (((X) >= 'a' && (X) <= 'z') ? ((X) - ('a' - 'A')) : (X))
-
-/** Funciones CURL **/
 
 size_t WriteCallback(char* contents, size_t tamanyo, size_t nmemb, void *userp)
 {
@@ -49,11 +46,57 @@ int ejecutarSolicitud(CURL* curl)
     return TODO_OK;
 }
 
-/** Lectura y muestra de la info del jugador **/
+int pedirNumeros(const char *url, char *buffer, unsigned cant)
+{
+    CURL* curl;
+    tUserDataWriteCallback dato;
+
+    dato.buffer = malloc(cant * 2);
+    dato.cantBytesCargados = 0;
+    if(NULL == dato.buffer)
+    {
+        fprintf(stderr,"No pude reservar memoria.");
+        return ERROR_CURL;
+    }
+
+    if(!iniciarCURL(&curl))//RESERVO RECURSOS PARA REALIZAR CONFIGURACIONES DE REQUEST
+    {
+        free(dato.buffer);
+        return ERROR_CURL;
+    }
+
+    //CONFIGURACION DE LOS RECURSOS RESERVADOS PARA HACER LA REQUEST
+    configurarCURL(curl, &dato.buffer);
+
+    //SE HACE LA REQUEST Y SE REALIZA MANEJO DE ERRORES POR SI FALLA
+    if(!ejecutarSolicitud(curl))
+    {
+        curl_easy_cleanup(curl);    //LIBERO RECURSOS RESERVADOS
+        free(dato.buffer);
+        return ERROR_CURL;
+    }
+
+    eliminarCaracter(dato.buffer, '\n', dato.cantBytesCargados);
+    memcpy(buffer, dato.buffer, cant);
+    free(dato.buffer);
+    return dato.cantBytesCargados / 2;
+}
+
+int solicitarAPI(char *url, char *secuencia, unsigned cant, char *colores)
+{
+    int result = pedirNumeros(url, secuencia, cant);
+    if(result == ERROR_CURL)
+    {
+        fprintf(stderr, "Error al pedir informacion a la API\n");
+        return ERROR_CURL;
+    }
+    transformarCad(secuencia, colores, result);
+    return result;
+}
 
 void mostrarJugador(const void* dato)
 {
-    printf("id: %d\n Nombre: %s\n", ((tJugador*)dato)->id, ((tJugador*)dato)->nya);
+    printf("id: %d\nNombre: %s\n", ((tJugador*)dato)->id, ((tJugador*)dato)->nya);
 }
 
 int ingresoDeNombresAListaSimple(t_lista* listaDeJugadores, unsigned* cantidadDeJugadores)
@@ -73,7 +116,7 @@ int ingresoDeNombresAListaSimple(t_lista* listaDeJugadores, unsigned* cantidadDe
         fflush(stdin);
         fgets(jugador.nya, TAM_NOM, stdin);
 
-        *(jugador.nya) = ES_LETRA(*(jugador.nya)) ? A_MAYUS(*(jugador.nya)) : *(jugador.nya);
+        *(jugador.nya) = ES_LETRA(*(jugador.nya)) ? toupper(*(jugador.nya)) : *(jugador.nya);
 
         if('-' == *(jugador.nya))
         {
@@ -109,17 +152,16 @@ int ingresoDeNombresAListaSimple(t_lista* listaDeJugadores, unsigned* cantidadDe
     return OK;
 }
 
-void transformarCad(char *cad, char *vec, unsigned cantElem, unsigned cantVec)
+void transformarCad(char *cad, char *vec, unsigned cantElem)
 {
     int i;
     for(i = 0; i < cantElem; i++)
-        *(cad + i) = *(vec + (*(cad + i) - '0') % cantVec);
+        *(cad + i) = *(vec + (*(cad + i) - '0'));
 }
 
 void juego(void* recursos, tConfig* config)
 {
     tConfig *dificultad;
-    char colores[4] = {'R', 'N', 'A', 'V'};
     int result;
     if(!ingresoDeNombresAListaSimple(&((tRecursosMenu*)recursos)->listaDeJugadores, &(((tRecursosMenu*)recursos)->cantidadDeJugadores)))
     {
@@ -141,7 +183,7 @@ void juego(void* recursos, tConfig* config)
             exit(1);
         }
         ((tRecursosMenu*)recursos)->longitudSecuencia = result;
-        transformarCad(((tRecursosMenu*)recursos)->secuencia, colores, result, sizeof(colores));
+        transformarCad(((tRecursosMenu*)recursos)->secuencia, ((tRecursosMenu*)recursos)->colores, result);
         rondas(recursos, dificultad);
     }
 }
@@ -150,14 +192,36 @@ void mostrarSecuencia(t_lista *secuencia, unsigned cant, unsigned milisegundos)
 {
     int i;
     char secuenciaChar;
+    HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
+    CONSOLE_SCREEN_BUFFER_INFO consoleInfo;
+    WORD saved_attributes;
+    GetConsoleScreenBufferInfo(hConsole, &consoleInfo);
+    saved_attributes = consoleInfo.wAttributes;
 
     printf("Secuencia: ");
     for(i = 0; i < cant; i++)
     {
         buscarPorIndiceEnListaSimple(secuencia, &secuenciaChar, sizeof(char), i);
+        switch(secuenciaChar)
+        {
+            case 'R':
+                SetConsoleTextAttribute(hConsole, COLOR_ROJO);
+                break;
+            case 'V':
+                SetConsoleTextAttribute(hConsole, COLOR_VERDE);
+                break;
+            case 'A':
+                SetConsoleTextAttribute(hConsole, COLOR_AMARILLO);
+                break;
+            case 'N':
+                SetConsoleTextAttribute(hConsole, COLOR_NARANJA);
+                break;
+        }
+        Beep(750, 100);
         printf("%c\t", secuenciaChar);
         Sleep(milisegundos / cant);
     }
+    SetConsoleTextAttribute(hConsole, saved_attributes);
 }
 
 int ingresarSecuencia(t_lista *ingresos, unsigned cantIngresos, unsigned tiempo, t_lista *secuencia, unsigned *cantidadIngresos)
@@ -260,7 +324,6 @@ void escribirNombre(const void* param1, void* dato)
 int usarVidas(t_lista *ingresos, unsigned ronda, unsigned *vidasRestantes, unsigned *vidasUsadas, unsigned *cantIngresos, t_lista *secuencia, tConfig *dificultad)
 {
     int result, i, vidasPorCiclo;
-    *vidasUsadas = 0;
 
     do
     {
@@ -289,43 +352,32 @@ int usarVidas(t_lista *ingresos, unsigned ronda, unsigned *vidasRestantes, unsig
     return result;
 }
 
-int solicitarAPI(char *url, char *secuencia, unsigned cant, char *colores, unsigned cantColores)
-{
-    int result = pedirNumeros(url, secuencia, cant);
-    if(result == ERROR_CURL)
-    {
-        fprintf(stderr, "Error al pedir informacion a la API\n");
-        return ERROR_CURL;
-    }
-    transformarCad(secuencia, colores, result, cantColores);
-    return result;
-}
-
 void rondas(void *recursos, tConfig *dificultad)
 {
     int turno = 1, ronda = 1, result;
-    char colores[4] = {'R', 'N', 'A', 'V'};
-    ///
     int cantPuntajeRonda = 0;
     int cantPuntajeRondaTotalJugador = 0;
     int puntajeMaximo = 0;
     char nombreArchivo[TAM_NOMBRE_REPORTE_ARCHIVO];
     tJugador jugadorActual;
-    ///
 
     char *secuencia = ((tRecursosMenu*)recursos)->secuencia;
     t_lista ingresos, listaSecuencia;
     unsigned cantIngresos;
     unsigned vidas = dificultad->cantVidas, vidasUsadas = 0;
 
-    ///
-    crearNombreArchivoReporte(nombreArchivo);
+    if(crearNombreArchivoReporte(nombreArchivo) == ERR_ARCH_REPORTE)
+    {
+        printf("Error en la creacion del archivo de reporte");
+        return;
+    }
     FILE* fp;
     if(!abrirArchivo(&fp, nombreArchivo, "wt"))
     {
+        printf("No pudo abrir el archivo de reporte");
         return;
     }
-    ///
+
     buscarPorIndiceEnListaSimple(&((tRecursosMenu*)recursos)->listaDeJugadores, &jugadorActual, sizeof(tJugador), 0);
     crearListaSimple(&ingresos);
     crearListaSimple(&listaSecuencia);
@@ -334,6 +386,7 @@ void rondas(void *recursos, tConfig *dificultad)
     {
         system("cls");
         cantIngresos = 0;
+        printf("Jugador: %s\n", jugadorActual.nya);
         printf("Turno %d | ronda %d:\n", turno, ronda);
         mostrarSecuencia(&listaSecuencia, ronda, (dificultad->tiempoSecuenciaEnPantalla + ronda) * 1000);
         system("cls");
@@ -349,7 +402,6 @@ void rondas(void *recursos, tConfig *dificultad)
                 printf("No puede usar vidas y su ingreso fue incorrecto, usted ha perdido\n");
                 system("pause");
                 system("cls");
-                ///
                 escribirArchivoReporte(fp, jugadorActual.nya, ronda, &listaSecuencia, &ingresos, 0, vidasUsadas);
                 jugadorActual.puntajeJugador = cantPuntajeRondaTotalJugador;
                 if(cantPuntajeRondaTotalJugador >= puntajeMaximo)
@@ -362,7 +414,6 @@ void rondas(void *recursos, tConfig *dificultad)
 
                 cantPuntajeRonda = 0;
                 cantPuntajeRondaTotalJugador = 0;
-                ///
 
                 ((tRecursosMenu*)recursos)->longitudSecuencia -= ronda;
                 secuencia += ronda;
@@ -376,15 +427,15 @@ void rondas(void *recursos, tConfig *dificultad)
             {
                 if(result == TODO_OK)
                 {
-                    cantPuntajeRonda = (vidasUsadas > 0) ? 1 : 3; // +1 si uso una vida o +3 si ingreso la secuencia sin errores
-                    cantPuntajeRondaTotalJugador += cantPuntajeRonda; // Sumo la cantidad de puntos totales por ronda
+                    cantPuntajeRonda = (vidasUsadas > 0) ? 1 : 3;
+                    cantPuntajeRondaTotalJugador += cantPuntajeRonda;
                     escribirArchivoReporte(fp, jugadorActual.nya, ronda, &listaSecuencia, &ingresos, cantPuntajeRonda, vidasUsadas);
                     ronda++;
                     secuencia++;
                     ((tRecursosMenu*)recursos)->longitudSecuencia--;
                     if(((tRecursosMenu*)recursos)->longitudSecuencia <= 0)
                     {
-                        if((((tRecursosMenu*)recursos)->longitudSecuencia = solicitarAPI(URL, (((tRecursosMenu*)recursos)->secuencia), TAM, colores, sizeof(colores))) == ERROR_CURL)
+                        if((((tRecursosMenu*)recursos)->longitudSecuencia = solicitarAPI(URL, (((tRecursosMenu*)recursos)->secuencia), TAM, ((tRecursosMenu*)recursos)->colores)) == ERROR_CURL)
                         {
                             printf("Ocurrio un error al solicitar la API");
                             fclose(fp);
@@ -404,8 +455,9 @@ void rondas(void *recursos, tConfig *dificultad)
         }
         vaciarListaSimple(&ingresos);
     }
-    ///
+
     printf("Juego terminado");
+    vaciarListaSimple(&listaSecuencia);
 
     if(puntajeMaximo != 0)
     {
@@ -421,17 +473,16 @@ void rondas(void *recursos, tConfig *dificultad)
         printf("Nadie gano...\n");
     }
 
+    vaciarListaSimple(&((tRecursosMenu*)recursos)->listaDeJugadores);
     fclose(fp);
-    ///
-
-    //mostrarListaSimpleEnOrden(&lista, mostrarCaracter);
 }
 
 int crearNombreArchivoReporte (char* nombreArchReporte)
 {
     time_t ahora = time(NULL);
     struct tm *t = localtime(&ahora);
-    strftime(nombreArchReporte, 100, FORMATO_NOMBRE_ARCH_REPORTE, t);
+    if(!strftime(nombreArchReporte, 100, FORMATO_NOMBRE_ARCH_REPORTE, t))
+        return ERR_ARCH_REPORTE;
     return TODO_OK;
 }
 
@@ -583,42 +634,6 @@ int trozarArchivoVariable (char* s, tConfig* d)
     /** Nivel */
     sscanf(s, "%c", &d->nivel);
     return TODO_OK;
-}
-
-int pedirNumeros(const char *url, char *buffer, unsigned cant)
-{
-    CURL* curl;
-    tUserDataWriteCallback dato;
-
-    dato.buffer = malloc(cant * 2);
-    dato.cantBytesCargados = 0;
-    if(NULL == dato.buffer)
-    {
-        fprintf(stderr,"No pude reservar memoria.");
-        return ERROR_CURL;
-    }
-
-    if(!iniciarCURL(&curl))//RESERVO RECURSOS PARA REALIZAR CONFIGURACIONES DE REQUEST
-    {
-        free(dato.buffer);
-        return ERROR_CURL;
-    }
-
-    //CONFIGURACION DE LOS RECURSOS RESERVADOS PARA HACER LA REQUEST
-    configurarCURL(curl, &dato.buffer);
-
-    //SE HACE LA REQUEST Y SE REALIZA MANEJO DE ERRORES POR SI FALLA
-    if(!ejecutarSolicitud(curl))
-    {
-        curl_easy_cleanup(curl);    //LIBERO RECURSOS RESERVADOS
-        free(dato.buffer);
-        return ERROR_CURL;
-    }
-
-    eliminarCaracter(dato.buffer, '\n', dato.cantBytesCargados);
-    memcpy(buffer, dato.buffer, cant);
-    free(dato.buffer);
-    return dato.cantBytesCargados / 2;
 }
 
 void mostrarCaracter(const void* dato)

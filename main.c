@@ -1,10 +1,6 @@
 #include "funciones.h"
 #include "menu.h"
-/// COMENTARIOS
-/**
- FALTA PONER UN TOLOWER O TOUPPER EN LA FUNCION DE INGRESAR OPCION
- EN FUNCION BUSCARCLAVEVECTOR EN LA LINEA 17 HAY QUE PONER NO_ENCONTRADO
- */
+#include <unistd.h>
 
 int main(int argc, char* argv[])
 {
@@ -16,18 +12,24 @@ int main(int argc, char* argv[])
       "[A] Jugar.",
       "[B] Salida."
     };
+    recursos.colores[0] = 'R';
+    recursos.colores[1] = 'A';
+    recursos.colores[2] = 'N';
+    recursos.colores[3] = 'V';
     unsigned cantidadDeRegistros = sizeof(textoMenuPrincipal) / MAX_TAM_TEXTO;
 
-    //crearLoteDePrueba(*(argv + NOMBRE_ARCH_CONFIG));
-    crearListaSimple(&recursos.listaDeJugadores);
+    if(access(*(argv + NOMBRE_ARCH_CONFIG), F_OK) != 0)
+        crearLoteDePrueba(*(argv + NOMBRE_ARCH_CONFIG));
 
     //LEER ARCHIVO CONFIGURACIONES
+
+    crearListaSimple(&recursos.listaDeJugadores);
+
     if(!leerArchivoConfig(*(argv + NOMBRE_ARCH_CONFIG), vectorConfig))
     {
         printf("El archivo de configuracion no contiene un formato valido. Revise el archivo README para mas informacion.");
         return ERR_ARCH_CONFIG;
     }
-    /// TODO: QUE EL SELECTOR DE OPCIÓN SE PASE COMO ARGUMENTO A ESTA FUNCIÓN
-    menuNuevo(textoMenuPrincipal, cantidadDeRegistros, &recursos, vectorConfig, switchMenu, cargarOpcion);
+    menu(textoMenuPrincipal, cantidadDeRegistros, &recursos, vectorConfig, switchMenu, cargarOpcion);
     return 0;
 }
