@@ -337,7 +337,7 @@ void rondas(void *recursos, tConfig *dificultad)
         printf("Turno %d | ronda %d:\n", turno, ronda);
         mostrarSecuencia(&listaSecuencia, ronda, (dificultad->tiempoSecuenciaEnPantalla + ronda) * 1000);
         system("cls");
-        result = ingresarSecuencia(&ingresos, ronda, dificultad->tiempoContestar, &listaSecuencia, &cantIngresos);
+        result = ingresarSecuencia(&ingresos, ronda, dificultad->tiempoContestar + ronda, &listaSecuencia, &cantIngresos);
 
         if(result == VIDAS)
             result = usarVidas(&ingresos, ronda, &vidas, &vidasUsadas, &cantIngresos, &listaSecuencia, dificultad);
