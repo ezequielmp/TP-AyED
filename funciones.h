@@ -57,27 +57,35 @@ typedef struct
     unsigned longitudSecuencia;
 } tRecursosMenu;
 
+/** Funciones CURL **/
 size_t WriteCallback(char* contents, size_t tamanyo, size_t nmemb, void *userp);
 int iniciarCURL(CURL** curl);
 void configurarCURL(CURL* curl, void* dato);
 int ejecutarSolicitud(CURL* curl);
-
-void mostrarJugador(const void* dato);
-void juego(void* recursos, tConfig* config);
 int pedirNumeros(const char *url, char *buffer, unsigned cant);
 
-void crearLoteDePrueba (const char* nombreArch);
-void mostrarSecuencia(t_lista *secuencia, unsigned cant, unsigned milisegundos);
-int leerArchivoConfig (const char* nombreArch, tConfig* vecConfig);
-int trozarArchivoVariable (char* s, tConfig* d);
-void rondas(void *recursos, tConfig *dificultad);
-void mostrarCaracter(const void* dato);
+/** Funciones de comparaciones **/
 int cmpConfigNivel (const void* a, const void* b);
-int ingresarSecuencia(t_lista *ingresos, unsigned cantIngresos, unsigned tiempo, t_lista *secuencia, unsigned *cantidadIngresos);
-unsigned ingresarVidas(unsigned cantUsable, unsigned vidasDisp);
+
+/** Cadenas **/
+int trozarArchivoVariable (char* s, tConfig* d);
 void transformarCad(char *cad, char *vec, unsigned cantElem, unsigned cantVec);
 
-///
+/** Mostrar informacion **/
+void mostrarJugador(const void* dato);
+void mostrarSecuencia(t_lista *secuencia, unsigned cant, unsigned milisegundos);
+void mostrarCaracter(const void* dato);
+
+/** Juego **/
+void juego(void* recursos, tConfig* config);
+void rondas(void *recursos, tConfig *dificultad);
+int ingresarSecuencia(t_lista *ingresos, unsigned cantIngresos, unsigned tiempo, t_lista *secuencia, unsigned *cantidadIngresos);
+unsigned ingresarVidas(unsigned cantUsable, unsigned vidasDisp);
+
+/** Archivos **/
+void crearLoteDePrueba (const char* nombreArch);
+int leerArchivoConfig (const char* nombreArch, tConfig* vecConfig);
+
 void escribirArchivoReporte(FILE* fpArch, const char* nombreJugador, unsigned ronda, const t_lista *secuenciaMostrada, const t_lista* respuestaJugador,
                             unsigned puntajeObtenidoPorPregunta, unsigned cantVidasUsadas);
 int crearNombreArchivoReporte (char* nombreArchReporte);

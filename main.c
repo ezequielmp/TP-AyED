@@ -28,6 +28,6 @@ int main(int argc, char* argv[])
         return ERR_ARCH_CONFIG;
     }
     /// TODO: QUE EL SELECTOR DE OPCIÓN SE PASE COMO ARGUMENTO A ESTA FUNCIÓN
-    menuNuevo(textoMenuPrincipal, cantidadDeRegistros, &recursos, vectorConfig, switchMenu, cargarOpcion);
+    menu(textoMenuPrincipal, cantidadDeRegistros, &recursos, vectorConfig, switchMenu, cargarOpcion);
     return 0;
 }

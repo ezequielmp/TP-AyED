@@ -10,7 +10,7 @@ void* buscarDificultad(void* v, const void* dato, size_t tam, unsigned ce, int(*
 tConfig* detallesJuego(tConfig* config);
 void cargarOpcion(char* op);
 void switchMenu(const char opcion, void* recursos, tConfig* config);
-void menuNuevo(char textoMenu[][MAX_TAM_TEXTO], unsigned cantidadDeRegistros, void* recursosMenu, tConfig* config, void selector(const char, void *, tConfig*), void cargarOpcion(char*));
+void menu(char textoMenu[][MAX_TAM_TEXTO], unsigned cantidadDeRegistros, void* recursosMenu, tConfig* config, void selector(const char, void *, tConfig*), void cargarOpcion(char*));
 int cmpDificultad(const void* a, const void* b);
 
 #endif // MENU_H_INCLUDED
