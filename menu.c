@@ -1,3 +1,4 @@
+#include "vector.h"
 #include "menu.h"
 #include "funciones.h"
 
@@ -11,8 +12,8 @@ tConfig* detallesJuego(tConfig* config)
     do
     {
         printf("\nIngrese el nivel de dificultad: ");
+        fflush(stdin);
         scanf("%c", &op);
-        getchar();
         op = toupper(op);
 
         if (op != 'F' && op != 'M' && op != 'D') {
@@ -41,8 +42,8 @@ void cargarOpcion(char* op)
     do
     {
         printf("\nIngrese una opcion: ");
+        fflush(stdin);
         scanf("%c", op);
-        getchar();
         *op = toupper(*op);
 
         if (*op != 'A' && *op != 'B') {

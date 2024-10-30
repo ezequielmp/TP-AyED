@@ -5,8 +5,6 @@
 #include "./Biblioteca/include/listaSimple/listaSimple.h"
 #define MAX_TAM_TEXTO 101
 
-/** Funciones nuevas, reemplazando por un nuevo menu **/
-void* buscarDificultad(void* v, const void* dato, size_t tam, unsigned ce, int(*cmp)(const void* a, const void* b));
 tConfig* detallesJuego(tConfig* config);
 void cargarOpcion(char* op);
 void switchMenu(const char opcion, void* recursos, tConfig* config);
