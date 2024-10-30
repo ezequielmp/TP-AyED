@@ -195,8 +195,8 @@ int ingresarSecuencia(t_lista *ingresos, unsigned cantIngresos, unsigned tiempo,
             if(incorrecto)
                 printf("Caracter invalido, ingrese nuevamente.\n");
         }
-        while(incorrecto && clock() - tiempoIni <= tiempo * 1000);
-        if(!incorrecto && clock() - tiempoIni <= tiempo * 1000)
+        while(incorrecto && (clock() - tiempoIni) / CLOCKS_PER_SEC <= tiempo);
+        if(!incorrecto && (clock() - tiempoIni) / CLOCKS_PER_SEC <= tiempo)
         {
             if(respuesta == 'Z')
                 return VIDAS;
@@ -211,7 +211,7 @@ int ingresarSecuencia(t_lista *ingresos, unsigned cantIngresos, unsigned tiempo,
             insertarPrimeroEnListaSimple(ingresos, &respuesta, sizeof(char));
         }
 
-        tiempoPasado = clock() - tiempoIni <= tiempo * 1000;
+        tiempoPasado = (clock() - tiempoIni) / CLOCKS_PER_SEC <= tiempo;
     }
     while(tiempoPasado && *cantidadIngresos < cantIngresos);
 
@@ -241,25 +241,6 @@ unsigned ingresarVidas(unsigned cantUsable, unsigned vidasDisp)
 
     return vidasIngresadas;
 }
-
-/*int usarVidas(unsigned vidas, unsigned cantIngresos, unsigned ronda, char* secuencia)
-{
-    int i, vidasUsadas;
-    while(result != TODO_OK && result != PERDER)
-    {
-        if(!vidas)
-        {
-            return PERDER;
-        }
-        else
-        {
-            vidasUsadas = ingresarVidas(cantIngresos + 1, vidas);
-
-            for(i = 0; i < vidasUsadas; i++)
-                sacarPrimeroEnListaSimple()
-            }
-    }
-}*/
 
 int cmpPuntajes(const void* a, const void* b)
 {
@@ -333,7 +314,7 @@ void rondas(void *recursos, tConfig *dificultad)
     ///
 
     char *secuencia = ((tRecursosMenu*)recursos)->secuencia;
-    t_lista lista, listaSecuencia;
+    t_lista ingresos, listaSecuencia;
     unsigned cantIngresos;
     unsigned vidas = dificultad->cantVidas, vidasUsadas = 0;
 
@@ -346,7 +327,7 @@ void rondas(void *recursos, tConfig *dificultad)
     }
     ///
     buscarPorIndiceEnListaSimple(&((tRecursosMenu*)recursos)->listaDeJugadores, &jugadorActual, sizeof(tJugador), 0);
-    crearListaSimple(&lista);
+    crearListaSimple(&ingresos);
     crearListaSimple(&listaSecuencia);
     insertarAlFinalEnListaSimple(&listaSecuencia, secuencia, sizeof(char));
     while(turno <= ((tRecursosMenu*)recursos)->cantidadDeJugadores)
@@ -356,10 +337,10 @@ void rondas(void *recursos, tConfig *dificultad)
         printf("Turno %d | ronda %d:\n", turno, ronda);
         mostrarSecuencia(&listaSecuencia, ronda, (dificultad->tiempoSecuenciaEnPantalla + ronda) * 1000);
         system("cls");
-        result = ingresarSecuencia(&lista, ronda, dificultad->tiempoContestar, &listaSecuencia, &cantIngresos);
+        result = ingresarSecuencia(&ingresos, ronda, dificultad->tiempoContestar, &listaSecuencia, &cantIngresos);
 
         if(result == VIDAS)
-            result = usarVidas(&lista, ronda, &vidas, &vidasUsadas, &cantIngresos, &listaSecuencia, dificultad);
+            result = usarVidas(&ingresos, ronda, &vidas, &vidasUsadas, &cantIngresos, &listaSecuencia, dificultad);
 
         if(result != VIDAS)
         {
@@ -369,9 +350,9 @@ void rondas(void *recursos, tConfig *dificultad)
                 system("pause");
                 system("cls");
                 ///
-                escribirArchivoReporte(fp, jugadorActual.nya, ronda, &listaSecuencia, &lista, 0, vidasUsadas);
+                escribirArchivoReporte(fp, jugadorActual.nya, ronda, &listaSecuencia, &ingresos, 0, vidasUsadas);
                 jugadorActual.puntajeJugador = cantPuntajeRondaTotalJugador;
-                if(cantPuntajeRondaTotalJugador > puntajeMaximo)
+                if(cantPuntajeRondaTotalJugador >= puntajeMaximo)
                 {
                     puntajeMaximo = cantPuntajeRondaTotalJugador;
                     ActualizarPorIndiceEnListaSimple(&((tRecursosMenu*)recursos)->listaDeJugadores, &jugadorActual, sizeof(tJugador), turno - 1);
@@ -384,7 +365,7 @@ void rondas(void *recursos, tConfig *dificultad)
                 ///
 
                 ((tRecursosMenu*)recursos)->longitudSecuencia -= ronda;
-                secuencia += ronda; ///VER QUE NO NOS QUEDEMOS SIN NUMEROS
+                secuencia += ronda;
                 turno++;
                 ronda = 1;
                 vidas = dificultad->cantVidas;
@@ -397,8 +378,7 @@ void rondas(void *recursos, tConfig *dificultad)
                 {
                     cantPuntajeRonda = (vidasUsadas > 0) ? 1 : 3; // +1 si uso una vida o +3 si ingreso la secuencia sin errores
                     cantPuntajeRondaTotalJugador += cantPuntajeRonda; // Sumo la cantidad de puntos totales por ronda
-                    escribirArchivoReporte(fp, jugadorActual.nya, ronda, &listaSecuencia, &lista, cantPuntajeRonda, vidasUsadas);
-                    ///
+                    escribirArchivoReporte(fp, jugadorActual.nya, ronda, &listaSecuencia, &ingresos, cantPuntajeRonda, vidasUsadas);
                     ronda++;
                     secuencia++;
                     ((tRecursosMenu*)recursos)->longitudSecuencia--;
@@ -422,7 +402,7 @@ void rondas(void *recursos, tConfig *dificultad)
             }
             vidasUsadas = 0;
         }
-        vaciarListaSimple(&lista);
+        vaciarListaSimple(&ingresos);
     }
     ///
     printf("Juego terminado");
