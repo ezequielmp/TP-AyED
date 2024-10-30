@@ -18,15 +18,16 @@ int main(int argc, char* argv[])
     };
     unsigned cantidadDeRegistros = sizeof(textoMenuPrincipal) / MAX_TAM_TEXTO;
 
-    crearLoteDePrueba(*(argv + NOMBRE_ARCH_CONFIG));
+    //crearLoteDePrueba(*(argv + NOMBRE_ARCH_CONFIG));
     crearListaSimple(&recursos.listaDeJugadores);
 
     //LEER ARCHIVO CONFIGURACIONES
     if(!leerArchivoConfig(*(argv + NOMBRE_ARCH_CONFIG), vectorConfig))
     {
+        printf("El archivo de configuracion no contiene un formato valido. Revise el archivo README para mas informacion.");
         return ERR_ARCH_CONFIG;
     }
     /// TODO: QUE EL SELECTOR DE OPCIÓN SE PASE COMO ARGUMENTO A ESTA FUNCIÓN
-    menuNuevo(textoMenuPrincipal, cantidadDeRegistros, &recursos, vectorConfig, switchMenu);
+    menuNuevo(textoMenuPrincipal, cantidadDeRegistros, &recursos, vectorConfig, switchMenu, cargarOpcion);
     return 0;
 }

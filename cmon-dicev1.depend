@@ -130,18 +130,18 @@
 	<string.h>
 	"arbol.h"
 
-1730178679 source:c:\users\ezequiel\documents\algoritmos y estructuras de datos\tp-ayed\menu.c
+1730249426 source:c:\users\ezequiel\documents\algoritmos y estructuras de datos\tp-ayed\menu.c
 	"menu.h"
 	"funciones.h"
 
-1729797556 c:\users\ezequiel\documents\algoritmos y estructuras de datos\tp-ayed\menu.h
+1730249446 c:\users\ezequiel\documents\algoritmos y estructuras de datos\tp-ayed\menu.h
 	<stdlib.h>
 	"config.h"
 	"./Biblioteca/include/listaSimple/listaSimple.h"
 
 1729790409 c:\users\ezequiel\documents\algoritmos y estructuras de datos\tp-ayed\config.h
 
-1730241726 c:\users\ezequiel\documents\algoritmos y estructuras de datos\tp-ayed\funciones.h
+1730249157 c:\users\ezequiel\documents\algoritmos y estructuras de datos\tp-ayed\funciones.h
 	<stdio.h>
 	<stdlib.h>
 	<ctype.h>
@@ -153,19 +153,19 @@
 	<time.h>
 	"./Biblioteca/include/listaSimple/listaSimple.h"
 
-1729791105 source:c:\users\ezequiel\documents\algoritmos y estructuras de datos\tp-ayed\vector.c
+1730249685 source:c:\users\ezequiel\documents\algoritmos y estructuras de datos\tp-ayed\vector.c
 	"vector.h"
 
-1729791010 c:\users\ezequiel\documents\algoritmos y estructuras de datos\tp-ayed\vector.h
+1730241872 c:\users\ezequiel\documents\algoritmos y estructuras de datos\tp-ayed\vector.h
 	<stdlib.h>
 	<string.h>
 
-1730241739 source:c:\users\ezequiel\documents\algoritmos y estructuras de datos\tp-ayed\funciones.c
+1730249244 source:c:\users\ezequiel\documents\algoritmos y estructuras de datos\tp-ayed\funciones.c
 	"funciones.h"
 	"menu.h"
 	"vector.h"
 
-1730174613 source:c:\users\ezequiel\documents\algoritmos y estructuras de datos\tp-ayed\main.c
+1730249385 source:c:\users\ezequiel\documents\algoritmos y estructuras de datos\tp-ayed\main.c
 	"funciones.h"
 	"menu.h"
 

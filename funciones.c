@@ -549,8 +549,8 @@ int leerArchivoConfig (const char* nombreArch, tConfig* vecConfig)
 
     while(fgets(linea, TAM_LINEA, fp))
     {
-        trozarArchivoVariable(linea, &config);
-        if(config.cantVidas < 0 || config.cantVidas > 5
+        if(trozarArchivoVariable(linea, &config) == NO_PUDE_LEER
+                || config.cantVidas < 0 || config.cantVidas > 5
                 || config.tiempoContestar < 1 || config.tiempoContestar > 20
                 || config.tiempoSecuenciaEnPantalla < 1 || config.tiempoSecuenciaEnPantalla > 20
                 || (toupper(config.nivel) != 'F' && toupper(config.nivel) != 'M' && toupper(config.nivel) != 'D'))
@@ -572,28 +572,37 @@ int leerArchivoConfig (const char* nombreArch, tConfig* vecConfig)
     return TODO_OK;
 }
 
-void trozarArchivoVariable (char* s, tConfig* d)
+int trozarArchivoVariable (char* s, tConfig* d)
 {
     char* aux = strchr(s, '\n');
+    if(!aux)
+        return NO_PUDE_LEER;
     *aux = '\0';
 
     /** Cant. Vidas */
     aux = strrchr(s, '|');
+    if(!aux)
+        return NO_PUDE_LEER;
     d->cantVidas = atoi(aux + 1);
     *aux = '\0';
 
     /** Tiempo contestar */
     aux = strrchr(s, '|');
+    if(!aux)
+        return NO_PUDE_LEER;
     d->tiempoContestar = atoi(aux + 1);
     *aux = '\0';
 
     /** Tiempo secuencia */
     aux = strrchr(s, '|');
+    if(!aux)
+        return NO_PUDE_LEER;
     d->tiempoSecuenciaEnPantalla = atoi(aux + 1);
     *aux = '\0';
 
     /** Nivel */
     sscanf(s, "%c", &d->nivel);
+    return TODO_OK;
 }
 
 int pedirNumeros(const char *url, char *buffer, unsigned cant)

@@ -14,7 +14,7 @@ int buscarPorClaveVector (void* v, const void* d, int ce, size_t tam, int (*cmp)
     void* ult = v + (ce - 1) * tam;
 
     if(ce == 0)
-        return NO_ENCONTRADO;
+        return NO_DUPLICADO;
 
     while(i <= ult && cmp(d, i) != 0)
         i += tam;

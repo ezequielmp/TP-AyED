@@ -65,7 +65,7 @@ void switchMenu(const char opcion, void* recursos, tConfig* config)
     }
 }
 
-void menuNuevo(char textoMenu[][MAX_TAM_TEXTO], unsigned cantidadDeRegistros, void* recursosMenu, tConfig* config, void selector(const char, void *, tConfig*))
+void menuNuevo(char textoMenu[][MAX_TAM_TEXTO], unsigned cantidadDeRegistros, void* recursosMenu, tConfig* config, void selector(const char, void *, tConfig*), void cargarOpcion(char*))
 {
     int i;
     char op;

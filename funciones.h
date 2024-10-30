@@ -18,6 +18,7 @@
 #define TAM_LINEA 100
 #define TAM_NOM 16
 #define TAM_VECTOR_CONFIG 3
+#define NO_PUDE_LEER 0
 ///
 #define TAM_NOMBRE_REPORTE_ARCHIVO 100
 ///
@@ -68,7 +69,7 @@ int pedirNumeros(const char *url, char *buffer, unsigned cant);
 void crearLoteDePrueba (const char* nombreArch);
 void mostrarSecuencia(t_lista *secuencia, unsigned cant, unsigned milisegundos);
 int leerArchivoConfig (const char* nombreArch, tConfig* vecConfig);
-void trozarArchivoVariable (char* s, tConfig* d);
+int trozarArchivoVariable (char* s, tConfig* d);
 void rondas(void *recursos, tConfig *dificultad);
 void mostrarCaracter(const void* dato);
 int cmpConfigNivel (const void* a, const void* b);
