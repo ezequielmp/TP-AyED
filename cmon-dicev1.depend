@@ -161,12 +161,12 @@
 	<stdlib.h>
 	<string.h>
 
-1730332122 source:c:\users\ezequiel\documents\algoritmos y estructuras de datos\tp-ayed\funciones.c
+1730334460 source:c:\users\ezequiel\documents\algoritmos y estructuras de datos\tp-ayed\funciones.c
 	"funciones.h"
 	"menu.h"
 	"vector.h"
 
-1730332234 source:c:\users\ezequiel\documents\algoritmos y estructuras de datos\tp-ayed\main.c
+1730334581 source:c:\users\ezequiel\documents\algoritmos y estructuras de datos\tp-ayed\main.c
 	"funciones.h"
 	"menu.h"
 	<unistd.h>

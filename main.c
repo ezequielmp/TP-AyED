@@ -13,10 +13,10 @@ int main()
       "[A] Jugar.",
       "[B] Salida."
     };
-    recursos.colores[0] = 'R';
-    recursos.colores[1] = 'A';
-    recursos.colores[2] = 'N';
-    recursos.colores[3] = 'V';
+    *(recursos.colores) = 'R';
+    *(recursos.colores + 1) = 'A';
+    *(recursos.colores + 2) = 'N';
+    *(recursos.colores + 3) = 'V';
     unsigned cantidadDeRegistros = sizeof(textoMenuPrincipal) / MAX_TAM_TEXTO;
 
     if(access(ARCHIVO_CONFIG, F_OK) != 0)

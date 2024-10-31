@@ -552,10 +552,10 @@ void crearLoteDePrueba (const char* nombreArch)
     for(i = 0; i < n; i++)
     {
         fprintf(fp, "%c|%u|%u|%u\n",
-                vectorConfig[i].nivel,
-                vectorConfig[i].tiempoSecuenciaEnPantalla,
-                vectorConfig[i].tiempoContestar,
-                vectorConfig[i].cantVidas);
+                (vectorConfig + i)->nivel,
+                (vectorConfig + i)->tiempoSecuenciaEnPantalla,
+                (vectorConfig + i)->tiempoContestar,
+                (vectorConfig + i)->cantVidas);
     }
     fclose(fp);
 }
